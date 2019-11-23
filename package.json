@@ -1,38 +1,43 @@
 {
-  "name": "@elijahjcobb/***",
-  "version": "0.1.0",
-  "description": "",
-  "main": "js/index",
-  "types": "dts/index",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublishOnly": "npm run compile",
-    "compile": "npm run clean && /usr/local/bin/tsc -p tsconfig.json",
-    "watch": "tsc -w -p .",
-    "clean": "rm -rf js && rm -rf dts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/elijahjcobb/***.git"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "keywords": [],
-  "author": "Elijah Cobb <elijah@elijahcobb.com> (https://elijahcobb.com/)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/elijahjcobb/***/issues"
-  },
-  "homepage": "https://github.com/elijahjcobb/***#readme",
-  "dependencies": {},
-  "devDependencies": {
-    "@types/node": "latest",
-    "typescript": "latest",
-    "tslint": "latest"
-  },
-  "files": [
-    "js",
-    "dts"
-  ]
+	"name": "@elijahjcobb/***",
+	"version": "0.1.0",
+	"description": "",
+	"main": "js/index",
+	"types": "dts/index",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"prepublishOnly": "npm run compile",
+		"compile": "npm run clean && /usr/local/bin/tsc -p tsconfig.json",
+		"watch": "tsc -w -p .",
+		"clean": "rm -rf js && rm -rf dts"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/elijahjcobb/***.git"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"keywords": [],
+	"author": "Elijah Cobb <elijah@elijahcobb.com> (https://elijahcobb.com/)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/elijahjcobb/***/issues"
+	},
+	"homepage": "https://github.com/elijahjcobb/***#readme",
+	"dependencies": {
+		"@elijahjcobb/prom-type": "latest",
+		"typit": "latest",
+		"@ejc-tsds/dictionary": "latest",
+		"@ejc-tsds/arraylist": "latest"
+	},
+	"devDependencies": {
+		"@types/node": "latest",
+		"typescript": "latest",
+		"tslint": "latest"
+	},
+	"files": [
+		"js",
+		"dts"
+	]
 }

@@ -20,5 +20,51 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-console.log("Hello, world!");
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const HTTP = require("http");
+class HRequest {
+    constructor(req, completion) {
+        this.headers = req.headers;
+        this.url = req.url;
+        this.method = req.method;
+        let payload = Buffer.alloc(0, 0);
+        this.payload = payload;
+        req.on("data", (chunk) => payload = Buffer.concat([payload, chunk]));
+        req.on("end", () => {
+            this.payload = payload;
+            completion();
+        });
+    }
+    getHeaders() { return this.headers; }
+    getUrl() { return this.url || "/"; }
+    getMethod() { return this.method || "GET"; }
+    getPayload() { return this.payload; }
+    static init(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise(((resolve, reject) => {
+                const request = new HRequest(req, () => resolve(request));
+            }));
+        });
+    }
+}
+class HResponse {
+}
+const server = HTTP.createServer((req, res) => {
+    const r = new HRequest(req, () => {
+        res.writeHead(200);
+        res.write(r.getPayload());
+        res.end("\n");
+    });
+});
+server.listen(3000, () => {
+    console.log("Server started.");
+});
 //# sourceMappingURL=index.js.map
