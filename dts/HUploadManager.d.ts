@@ -19,25 +19,26 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
 import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+export declare enum HUploadManagerLocationType {
+    Payload = 0,
+    Stream = 1
+}
+export declare type HUploadManagerConstructorType = {
+    location: HUploadManagerLocationType;
+    extensions?: string[];
+    sizeLimit?: number;
+};
+export declare class HUploadManager {
+    private readonly allowedExtensions?;
+    private readonly sizeLimit?;
+    private readonly location;
+    constructor(obj: HUploadManagerConstructorType);
+    private throwFileTooBigError;
+    private throwFileIncorrectType;
+    private getNewFilePath;
+    getAllowedExtensions(): string[] | undefined;
+    getSizeLimit(): number | undefined;
+    getLocation(): HUploadManagerLocationType;
+    handleRequest(req: HRequest): Promise<void>;
+}

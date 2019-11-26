@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright 2019
  *
@@ -19,25 +20,26 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
-import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+Object.defineProperty(exports, "__esModule", { value: true });
+class HError {
+    constructor(statusCode, message) {
+        this.message = message;
+        this.statusCode = statusCode;
+        this.shouldShow = false;
+    }
+    msg(value) {
+        this.message = value;
+        return this;
+    }
+    code(value) {
+        this.statusCode = value;
+        return this;
+    }
+    show() { this.shouldShow = true; }
+    hide() { this.shouldShow = false; }
+    getStatusCode() { return this.statusCode; }
+    getStatusMessage() { return this.message; }
+    static init() { return new HError(500, "Internal server error."); }
+}
+exports.HError = HError;
+//# sourceMappingURL=HError.js.map

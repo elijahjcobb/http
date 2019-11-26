@@ -19,25 +19,14 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
-import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+export declare enum HMethod {
+    GET = 0,
+    POST = 1,
+    PUT = 2,
+    DELETE = 3,
+    UNKNOWN = 4
+}
+export declare abstract class HMethodHelper {
+    static methodFromString(method: string): HMethod;
+    static stringFromMethod(method: HMethod): string;
+}

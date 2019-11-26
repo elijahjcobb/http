@@ -19,25 +19,29 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
+/// <reference types="node" />
+import * as HTTP from "http";
 import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
-import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+import { ObjectTypeDefinition } from "typit";
+export declare class HRequest {
+    private readonly req;
+    private readonly headers;
+    private readonly url;
+    private readonly method;
+    private payload;
+    private payloadSteamPath;
+    private payloadObject;
+    constructor(req: HTTP.IncomingMessage);
+    getRequest(): HTTP.IncomingMessage;
+    getHeaders(): HTTP.IncomingHttpHeaders;
+    getUrl(): string;
+    getMethod(): HMethod;
+    getPayload(): Buffer | undefined;
+    getPayloadStreamPath(): string | undefined;
+    setPayloadStreamPath(value: string): void;
+    getEndpoint(): string;
+    fetchPayload(): void;
+    verifyPayloadAgainstTypeDefinition(types: ObjectTypeDefinition): void;
+    getBody<T = object>(): T | undefined;
+    setPayload(payload: Buffer): void;
+}

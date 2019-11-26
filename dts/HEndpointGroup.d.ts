@@ -19,25 +19,20 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
+import { HEndpoint, HEndpointConstructorType } from "./HEndpoint";
 import { HRequest } from "./HRequest";
 import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+export declare class HEndpointGroup {
+    private endpoints;
+    private path;
+    private postProcessHandler;
+    private static WILDCARD_KEY_ENDPOINT;
+    private static WILDCARD_KEY_GROUP;
+    constructor(path?: string);
+    private findHandlerForEndpoint;
+    setPostProcessHandler(handler: (req: HRequest, res: HResponse) => Promise<void>): void;
+    getPostProcessHandler(): ((req: HRequest, res: HResponse) => Promise<void>) | undefined;
+    listen(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType): void;
+    dynamicListen(listener: HEndpointGroup | HEndpointConstructorType): void;
+    getHandler(url: string): HEndpoint | undefined;
+}

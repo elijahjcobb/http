@@ -1,5 +1,5 @@
 {
-	"name": "@elijahjcobb/***",
+	"name": "@elijahjcobb/hydrogen",
 	"version": "0.1.0",
 	"description": "",
 	"main": "js/index",
@@ -13,7 +13,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/elijahjcobb/***.git"
+		"url": "git+https://github.com/elijahjcobb/hydrogen.git"
 	},
 	"publishConfig": {
 		"access": "public"
@@ -22,14 +22,15 @@
 	"author": "Elijah Cobb <elijah@elijahcobb.com> (https://elijahcobb.com/)",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/elijahjcobb/***/issues"
+		"url": "https://github.com/elijahjcobb/hydrogen/issues"
 	},
-	"homepage": "https://github.com/elijahjcobb/***#readme",
+	"homepage": "https://github.com/elijahjcobb/hydrogen#readme",
 	"dependencies": {
-		"@elijahjcobb/prom-type": "latest",
-		"typit": "latest",
+		"@ejc-tsds/arraylist": "latest",
 		"@ejc-tsds/dictionary": "latest",
-		"@ejc-tsds/arraylist": "latest"
+		"@ejc-tsds/stack": "latest",
+		"@elijahjcobb/prom-type": "latest",
+		"typit": "latest"
 	},
 	"devDependencies": {
 		"@types/node": "latest",

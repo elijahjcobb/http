@@ -19,25 +19,14 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
-import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+import { HEndpointConstructorType } from "./HEndpoint";
+import { HEndpointGroup } from "./HEndpointGroup";
+export declare class HServer {
+    private server;
+    private rootEndpointGroup;
+    constructor();
+    private sendJSONToSocket;
+    listen(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType): void;
+    dynamicListen(listener: HEndpointGroup | HEndpointConstructorType): void;
+    start(port?: number, startHandler?: () => void): void;
+}

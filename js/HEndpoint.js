@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright 2019
  *
@@ -19,25 +20,22 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
-import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+Object.defineProperty(exports, "__esModule", { value: true });
+const HUploadManager_1 = require("./HUploadManager");
+class HEndpoint {
+    constructor(endpoint, obj) {
+        this.endpoint = endpoint;
+        this.method = obj.method;
+        this.handler = obj.handler;
+        this.requiredType = obj.types;
+        if (obj.upload)
+            this.uploadManager = new HUploadManager_1.HUploadManager(obj.upload);
+    }
+    getEndpoint() { return this.endpoint; }
+    getMethod() { return this.method; }
+    getHandler() { return this.handler; }
+    getRequiredType() { return this.requiredType; }
+    getUploadManager() { return this.uploadManager; }
+}
+exports.HEndpoint = HEndpoint;
+//# sourceMappingURL=HEndpoint.js.map

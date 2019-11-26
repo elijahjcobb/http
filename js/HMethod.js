@@ -20,27 +20,44 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const HMethod_1 = require("./HMethod");
-const HServer_1 = require("./HServer");
-const HUploadManager_1 = require("./HUploadManager");
-const server = new HServer_1.HServer();
-server.listen("/hello", {
-    method: HMethod_1.HMethod.GET,
-    handler: ((req, res) => __awaiter(this, void 0, void 0, function* () {
-        res.send({ msg: req.getPayloadStreamPath() });
-    })),
-    upload: {
-        location: HUploadManager_1.HUploadManagerLocationType.Stream
+var HMethod;
+(function (HMethod) {
+    HMethod[HMethod["GET"] = 0] = "GET";
+    HMethod[HMethod["POST"] = 1] = "POST";
+    HMethod[HMethod["PUT"] = 2] = "PUT";
+    HMethod[HMethod["DELETE"] = 3] = "DELETE";
+    HMethod[HMethod["UNKNOWN"] = 4] = "UNKNOWN";
+})(HMethod = exports.HMethod || (exports.HMethod = {}));
+class HMethodHelper {
+    static methodFromString(method) {
+        switch (method) {
+            case "GET":
+                return HMethod.GET;
+            case "POST":
+                return HMethod.POST;
+            case "PUT":
+                return HMethod.PUT;
+            case "DELETE":
+                return HMethod.DELETE;
+            default:
+                return HMethod.UNKNOWN;
+        }
     }
-});
-server.start(3000);
-//# sourceMappingURL=index.js.map
+    static stringFromMethod(method) {
+        switch (method) {
+            case HMethod.GET:
+                return "GET";
+            case HMethod.POST:
+                return "POST";
+            case HMethod.PUT:
+                return "PUT";
+            case HMethod.DELETE:
+                return "DELETE";
+            default:
+                return "UNKNOWN";
+        }
+    }
+}
+exports.HMethodHelper = HMethodHelper;
+//# sourceMappingURL=HMethod.js.map

@@ -19,25 +19,43 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+ 
+export class HError {
 
-import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
-import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
+	private message: string;
+	private statusCode: number;
+	private shouldShow: boolean;
 
-const server: HServer = new HServer();
+	public constructor(statusCode: number, message: string) {
 
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+		this.message = message;
+		this.statusCode = statusCode;
+		this.shouldShow = false;
 
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
 	}
-});
 
-server.start(3000);
+	public msg(value: string): HError {
+
+		this.message = value;
+
+		return this;
+
+	}
+
+	public code(value: number): HError {
+
+		this.statusCode = value;
+
+		return this;
+
+	}
+
+	public show(): void { this.shouldShow = true; }
+	public hide(): void { this.shouldShow = false; }
+
+	public getStatusCode(): number { return this.statusCode; }
+	public getStatusMessage(): string { return this.message; }
+
+	public static init(): HError { return new HError(500, "Internal server error."); }
+
+}

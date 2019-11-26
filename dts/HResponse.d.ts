@@ -19,25 +19,25 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
+/// <reference types="node" />
+import * as FS from "fs";
 import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+import * as HTTP from "http";
+export declare class HResponse {
+    private readonly headers;
+    private readonly res;
+    private statusCode;
+    private startWrite;
+    constructor(req: HRequest, res: HTTP.ServerResponse);
+    private setHeaders;
+    private setLengthHeader;
+    private setTypeHeader;
+    setStatusCode(value: number): void;
+    setHeader(key: string, value: string | number): void;
+    sendFile(path: string): void;
+    sendBuffer(buffer: Buffer): void;
+    sendStream(stream: FS.ReadStream): void;
+    send(obj: object): void;
+    write(data: Buffer): void;
+    writeEnd(): void;
+}

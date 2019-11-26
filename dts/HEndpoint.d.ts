@@ -19,25 +19,28 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
+import { HUploadManager, HUploadManagerConstructorType } from "./HUploadManager";
 import { HMethod } from "./HMethod";
-import { HServer } from "./HServer";
-import { HRequest } from "./HRequest";
 import { HResponse } from "./HResponse";
-import { HUploadManagerLocationType } from "./HUploadManager";
-
-const server: HServer = new HServer();
-
-server.listen("/hello", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({ msg: req.getPayloadStreamPath()});
-
-	}),
-	upload: {
-		location: HUploadManagerLocationType.Stream
-	}
-});
-
-server.start(3000);
+import { ObjectTypeDefinition } from "typit";
+import { HRequest } from "./HRequest";
+export declare type HEndpointConstructorType = {
+    method: HMethod;
+    handler: HEndpointHandler;
+    types?: ObjectTypeDefinition;
+    upload?: HUploadManagerConstructorType;
+};
+export declare type HEndpointHandler = (req: HRequest, res: HResponse) => Promise<void>;
+export declare class HEndpoint {
+    private readonly endpoint;
+    private readonly method;
+    private readonly handler;
+    private readonly requiredType;
+    private readonly uploadManager;
+    constructor(endpoint: string, obj: HEndpointConstructorType);
+    getEndpoint(): string;
+    getMethod(): HMethod;
+    getHandler(): HEndpointHandler;
+    getRequiredType(): ObjectTypeDefinition | undefined;
+    getUploadManager(): HUploadManager | undefined;
+}
