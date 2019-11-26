@@ -74,7 +74,7 @@ export class HUploadManager {
 		let name: string = Crypto.randomBytes(8).toString("hex");
 		while (FS.existsSync(`/tmp/${name}`)) name = Crypto.randomBytes(8).toString("hex");
 
-		return name;
+		return `/tmp/${name}`;
 
 	}
 
