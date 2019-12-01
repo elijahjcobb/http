@@ -50,11 +50,21 @@ export class HError {
 
 	}
 
-	public show(): void { this.shouldShow = true; }
-	public hide(): void { this.shouldShow = false; }
+	public show(): HError { this.shouldShow = true; return this; }
+	public hide(): HError { this.shouldShow = false; return this; }
 
-	public getStatusCode(): number { return this.statusCode; }
-	public getStatusMessage(): string { return this.message; }
+	public getStatusCode(): number {
+
+		if (this.shouldShow) return this.statusCode;
+		else return 500;
+
+	}
+	public getStatusMessage(): string {
+
+		if (this.shouldShow) return this.message;
+		else return "Internal server error.";
+
+	}
 
 	public static init(): HError { return new HError(500, "Internal server error."); }
 

@@ -26,8 +26,8 @@ export declare class HError {
     constructor(statusCode: number, message: string);
     msg(value: string): HError;
     code(value: number): HError;
-    show(): void;
-    hide(): void;
+    show(): HError;
+    hide(): HError;
     getStatusCode(): number;
     getStatusMessage(): string;
     static init(): HError;

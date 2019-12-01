@@ -35,10 +35,20 @@ class HError {
         this.statusCode = value;
         return this;
     }
-    show() { this.shouldShow = true; }
-    hide() { this.shouldShow = false; }
-    getStatusCode() { return this.statusCode; }
-    getStatusMessage() { return this.message; }
+    show() { this.shouldShow = true; return this; }
+    hide() { this.shouldShow = false; return this; }
+    getStatusCode() {
+        if (this.shouldShow)
+            return this.statusCode;
+        else
+            return 500;
+    }
+    getStatusMessage() {
+        if (this.shouldShow)
+            return this.message;
+        else
+            return "Internal server error.";
+    }
     static init() { return new HError(500, "Internal server error."); }
 }
 exports.HError = HError;

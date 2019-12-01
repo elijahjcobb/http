@@ -49,8 +49,9 @@ class HRequest {
             const payloadString = this.payload.toString("utf8");
             this.payloadObject = JSON.parse(payloadString);
         }
-        catch (e) { }
-        return;
+        catch (e) {
+            throw HError_1.HError.init().code(400).msg("Unable to decode payload.").show();
+        }
     }
     verifyPayloadAgainstTypeDefinition(types) {
         if (this.payloadObject === undefined)

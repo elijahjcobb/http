@@ -60,7 +60,7 @@ class HResponse {
         }
     }
     sendBuffer(buffer) {
-        this.setLengthHeader(buffer.length);
+        this.setLengthHeader(buffer.length + 1);
         this.write(buffer);
         this.writeEnd();
     }
@@ -81,8 +81,9 @@ class HResponse {
         }
     }
     write(data) {
+        if (!this.startWrite)
+            this.setHeaders();
         this.startWrite = true;
-        this.setHeaders();
         this.res.write(data);
     }
     writeEnd() {

@@ -42,6 +42,6 @@ export declare class HRequest {
     getEndpoint(): string;
     fetchPayload(): void;
     verifyPayloadAgainstTypeDefinition(types: ObjectTypeDefinition): void;
-    getBody<T = object>(): T | undefined;
+    getBody<T = object>(): T;
     setPayload(payload: Buffer): void;
 }

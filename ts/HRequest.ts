@@ -68,9 +68,11 @@ export class HRequest {
 			const payloadString: string = this.payload.toString("utf8");
 			this.payloadObject = JSON.parse(payloadString);
 
-		} catch (e) {}
+		} catch (e) {
 
-		return;
+			throw HError.init().code(400).msg("Unable to decode payload.").show();
+
+		}
 
 	}
 
@@ -82,7 +84,7 @@ export class HRequest {
 
 	}
 
-	public getBody<T = object>(): T | undefined {
+	public getBody<T = object>(): T {
 
 		return this.payloadObject as unknown as T;
 

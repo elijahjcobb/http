@@ -95,7 +95,7 @@ export class HResponse {
 
 	public sendBuffer(buffer: Buffer): void {
 
-		this.setLengthHeader(buffer.length);
+		this.setLengthHeader(buffer.length + 1);
 		this.write(buffer);
 		this.writeEnd();
 
@@ -128,8 +128,8 @@ export class HResponse {
 
 	public write(data: Buffer): void {
 
+		if (!this.startWrite) this.setHeaders();
 		this.startWrite = true;
-		this.setHeaders();
 
 		this.res.write(data);
 

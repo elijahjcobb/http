@@ -34,7 +34,6 @@ export declare class HUploadManager {
     private readonly sizeLimit?;
     private readonly location;
     constructor(obj: HUploadManagerConstructorType);
-    private throwFileTooBigError;
     private throwFileIncorrectType;
     private getNewFilePath;
     getAllowedExtensions(): string[] | undefined;

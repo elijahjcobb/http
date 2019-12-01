@@ -29,7 +29,7 @@ class HEndpointGroup {
         this.path = path;
         this.endpoints = new dictionary_1.Dictionary();
     }
-    findHandlerForEndpoint(endpoints) {
+    findHandlerForEndpoint(endpoints, method) {
         const current = endpoints.pop();
         if (current == undefined)
             return undefined;
@@ -40,10 +40,10 @@ class HEndpointGroup {
             entryForKey = this.endpoints.get(HEndpointGroup.WILDCARD_KEY_ENDPOINT);
         if (entryForKey === undefined)
             return;
-        if (entryForKey instanceof HEndpoint_1.HEndpoint && endpoints.peek() == undefined)
+        if (entryForKey instanceof HEndpoint_1.HEndpoint && endpoints.peek() == undefined && entryForKey.getMethod() === method)
             return entryForKey;
         else if (entryForKey instanceof HEndpointGroup)
-            return entryForKey.findHandlerForEndpoint(endpoints);
+            return entryForKey.findHandlerForEndpoint(endpoints, method);
         else
             return;
     }
@@ -70,10 +70,10 @@ class HEndpointGroup {
             : HEndpointGroup.WILDCARD_KEY_ENDPOINT;
         this.listen(endpoint, listener);
     }
-    getHandler(url) {
+    getHandler(url, method) {
         if (url.charAt(0) === "/")
             url = url.substring(1);
-        return this.findHandlerForEndpoint(new stack_1.Stack(url.split("/")));
+        return this.findHandlerForEndpoint(new stack_1.Stack(url.split("/")), method);
     }
 }
 HEndpointGroup.WILDCARD_KEY_ENDPOINT = "*e*";

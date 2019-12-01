@@ -43,7 +43,7 @@ export class HServer {
 
 				const request: HRequest = new HRequest(req);
 
-				const endpoint: HEndpoint | undefined = this.rootEndpointGroup.getHandler(request.getUrl());
+				const endpoint: HEndpoint | undefined = this.rootEndpointGroup.getHandler(request.getUrl(), request.getMethod());
 
 				if (endpoint) {
 
@@ -57,6 +57,7 @@ export class HServer {
 					}
 
 					await uploadManager.handleRequest(request);
+
 					const handler: HEndpointHandler = endpoint.getHandler();
 					const response: HResponse = new HResponse(request, res);
 

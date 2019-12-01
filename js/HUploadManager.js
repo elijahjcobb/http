@@ -43,9 +43,6 @@ class HUploadManager {
         this.sizeLimit = obj.sizeLimit;
         this.location = obj.location;
     }
-    throwFileTooBigError() {
-        throw HError_1.HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show();
-    }
     throwFileIncorrectType() {
         if (this.allowedExtensions !== undefined) {
             throw HError_1.HError.init()
@@ -72,23 +69,22 @@ class HUploadManager {
                     if (mime === undefined || this.allowedExtensions.indexOf(mime) === -1)
                         this.throwFileIncorrectType();
                 }
-                // if (this.sizeLimit !== undefined) {
-                //
-                // 	const contentLength: string | undefined = req.getHeaders()["content-length"];
-                // 	if (contentLength !== undefined) {
-                //
-                // 		const lengthNum: number = parseInt(contentLength);
-                // 		if (!isNaN(lengthNum) && lengthNum > this.sizeLimit) this.throwFileTooBigError();
-                //
-                // 	} else this.throwFileTooBigError();
-                //
-                // }
+                if (this.sizeLimit !== undefined) {
+                    const contentLength = req.getHeaders()["content-length"];
+                    if (contentLength !== undefined) {
+                        const lengthNum = parseInt(contentLength);
+                        if (!isNaN(lengthNum) && lengthNum > this.sizeLimit)
+                            return reject(HError_1.HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
+                    }
+                    else
+                        return reject(HError_1.HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
+                }
                 if (this.location === HUploadManagerLocationType.Payload) {
                     let payload = Buffer.alloc(0, 0);
                     request.on("data", (chunk) => {
                         payload = Buffer.concat([payload, chunk]);
                         if (this.sizeLimit !== undefined && payload.length > this.sizeLimit)
-                            this.throwFileTooBigError();
+                            return reject(HError_1.HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
                     });
                     request.on("end", () => {
                         req.setPayload(payload);
@@ -102,8 +98,9 @@ class HUploadManager {
                     request.on("data", (chunk) => {
                         length += chunk.length;
                         writeStream.write(chunk);
-                        if (this.sizeLimit !== undefined && length > this.sizeLimit)
-                            this.throwFileTooBigError();
+                        if (this.sizeLimit !== undefined && length > this.sizeLimit) {
+                            return reject(HError_1.HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
+                        }
                     });
                     request.on("end", () => {
                         req.setPayloadStreamPath(filePath);

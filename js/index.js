@@ -32,14 +32,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const HMethod_1 = require("./HMethod");
 const HServer_1 = require("./HServer");
 const HUploadManager_1 = require("./HUploadManager");
+const typit_1 = require("typit");
 const server = new HServer_1.HServer();
 server.listen("/hello", {
-    method: HMethod_1.HMethod.GET,
+    method: HMethod_1.HMethod.POST,
     handler: ((req, res) => __awaiter(this, void 0, void 0, function* () {
-        res.send({ msg: req.getPayloadStreamPath() });
+        const body = req.getBody();
+        if (body.foo > 18)
+            res.send({ msg: true });
+        else
+            res.send({ m: 0 });
     })),
+    types: {
+        foo: typit_1.StandardType.NUMBER
+    },
     upload: {
-        location: HUploadManager_1.HUploadManagerLocationType.Stream
+        location: HUploadManager_1.HUploadManagerLocationType.Payload,
+        sizeLimit: 16
     }
 });
 server.start(3000);

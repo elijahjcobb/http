@@ -22,6 +22,7 @@
 import { HEndpoint, HEndpointConstructorType } from "./HEndpoint";
 import { HRequest } from "./HRequest";
 import { HResponse } from "./HResponse";
+import { HMethod } from "./HMethod";
 export declare class HEndpointGroup {
     private endpoints;
     private path;
@@ -34,5 +35,5 @@ export declare class HEndpointGroup {
     getPostProcessHandler(): ((req: HRequest, res: HResponse) => Promise<void>) | undefined;
     listen(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType): void;
     dynamicListen(listener: HEndpointGroup | HEndpointConstructorType): void;
-    getHandler(url: string): HEndpoint | undefined;
+    getHandler(url: string, method: HMethod): HEndpoint | undefined;
 }

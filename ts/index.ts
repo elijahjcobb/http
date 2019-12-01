@@ -25,18 +25,26 @@ import { HServer } from "./HServer";
 import { HRequest } from "./HRequest";
 import { HResponse } from "./HResponse";
 import { HUploadManagerLocationType } from "./HUploadManager";
+import { StandardType } from "typit";
 
 const server: HServer = new HServer();
 
 server.listen("/hello", {
-	method: HMethod.GET,
+	method: HMethod.POST,
 	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
 
-		res.send({ msg: req.getPayloadStreamPath()});
+		const body: {foo: number} = req.getBody();
+
+		if (body.foo > 18) res.send({msg: true});
+		else res.send({m: 0});
 
 	}),
+	types: {
+		foo: StandardType.NUMBER
+	},
 	upload: {
-		location: HUploadManagerLocationType.Stream
+		location: HUploadManagerLocationType.Payload,
+		sizeLimit: 16
 	}
 });
 

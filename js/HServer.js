@@ -41,7 +41,7 @@ class HServer {
         this.server = HTTP.createServer((req, res) => {
             (() => __awaiter(this, void 0, void 0, function* () {
                 const request = new HRequest_1.HRequest(req);
-                const endpoint = this.rootEndpointGroup.getHandler(request.getUrl());
+                const endpoint = this.rootEndpointGroup.getHandler(request.getUrl(), request.getMethod());
                 if (endpoint) {
                     let uploadManager = endpoint.getUploadManager();
                     if (uploadManager === undefined) {

@@ -25,6 +25,7 @@ import { Stack } from "@ejc-tsds/stack";
 import { HEndpoint, HEndpointConstructorType } from "./HEndpoint";
 import { HRequest } from "./HRequest";
 import { HResponse } from "./HResponse";
+import { HMethod, HMethodHelper } from "./HMethod";
 
 export class HEndpointGroup {
 
@@ -41,7 +42,7 @@ export class HEndpointGroup {
 
 	}
 
-	private findHandlerForEndpoint(endpoints: Stack<string>): HEndpoint | undefined {
+	private findHandlerForEndpoint(endpoints: Stack<string>, method: HMethod): HEndpoint | undefined {
 
 		const current: string | undefined = endpoints.pop();
 		if (current == undefined) return undefined;
@@ -51,8 +52,8 @@ export class HEndpointGroup {
 		if (entryForKey === undefined && endpoints.peek() == undefined) entryForKey = this.endpoints.get(HEndpointGroup.WILDCARD_KEY_ENDPOINT);
 
 		if (entryForKey === undefined) return;
-		if (entryForKey instanceof HEndpoint && endpoints.peek() == undefined) return entryForKey;
-		else if (entryForKey instanceof HEndpointGroup) return entryForKey.findHandlerForEndpoint(endpoints);
+		if (entryForKey instanceof HEndpoint && endpoints.peek() == undefined && entryForKey.getMethod() === method) return entryForKey;
+		else if (entryForKey instanceof HEndpointGroup) return entryForKey.findHandlerForEndpoint(endpoints, method);
 		else return;
 
 	}
@@ -96,10 +97,10 @@ export class HEndpointGroup {
 
 	}
 
-	public getHandler(url: string): HEndpoint | undefined {
+	public getHandler(url: string, method: HMethod): HEndpoint | undefined {
 
 		if (url.charAt(0) === "/") url = url.substring(1);
-		return this.findHandlerForEndpoint(new Stack<string>(url.split("/")));
+		return this.findHandlerForEndpoint(new Stack<string>(url.split("/")), method);
 
 	}
 

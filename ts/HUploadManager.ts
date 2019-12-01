@@ -52,12 +52,6 @@ export class HUploadManager {
 
 	}
 
-	private throwFileTooBigError(): void {
-
-		throw HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show();
-
-	}
-
 	private throwFileIncorrectType(): void {
 
 		if (this.allowedExtensions !== undefined) {
@@ -86,6 +80,7 @@ export class HUploadManager {
 
 		return new Promise<void>(((resolve: PromResolve<void>, reject: PromReject): void => {
 
+
 			const request: HTTP.IncomingMessage = req.getRequest();
 
 			if (this.allowedExtensions !== undefined) {
@@ -96,17 +91,17 @@ export class HUploadManager {
 
 			}
 
-			// if (this.sizeLimit !== undefined) {
-			//
-			// 	const contentLength: string | undefined = req.getHeaders()["content-length"];
-			// 	if (contentLength !== undefined) {
-			//
-			// 		const lengthNum: number = parseInt(contentLength);
-			// 		if (!isNaN(lengthNum) && lengthNum > this.sizeLimit) this.throwFileTooBigError();
-			//
-			// 	} else this.throwFileTooBigError();
-			//
-			// }
+			if (this.sizeLimit !== undefined) {
+
+				const contentLength: string | undefined = req.getHeaders()["content-length"];
+				if (contentLength !== undefined) {
+
+					const lengthNum: number = parseInt(contentLength);
+					if (!isNaN(lengthNum) && lengthNum > this.sizeLimit) return reject(HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
+
+				} else return reject(HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
+
+			}
 
 			if (this.location === HUploadManagerLocationType.Payload) {
 
@@ -115,7 +110,7 @@ export class HUploadManager {
 
 					payload = Buffer.concat([payload, chunk]);
 
-					if (this.sizeLimit !== undefined && payload.length > this.sizeLimit) this.throwFileTooBigError();
+					if (this.sizeLimit !== undefined && payload.length > this.sizeLimit) return reject(HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
 
 				});
 
@@ -140,7 +135,9 @@ export class HUploadManager {
 					length += chunk.length;
 					writeStream.write(chunk);
 
-					if (this.sizeLimit !== undefined && length > this.sizeLimit) this.throwFileTooBigError();
+					if (this.sizeLimit !== undefined && length > this.sizeLimit) {
+						return reject(HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
+					}
 
 				});
 
