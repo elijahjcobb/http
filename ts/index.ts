@@ -32,4 +32,4 @@ export {HRequest} from "./HRequest";
 export {HResponse} from "./HResponse";
 export {HServer} from "./HServer";
 export {HUploadManager, HUploadManagerLocationType, HUploadManagerConstructorType} from "./HUploadManager";
-export {StandardType, ObjectTypeDefinition} from "typit";
+export * from "typit";
