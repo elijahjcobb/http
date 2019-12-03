@@ -20,50 +20,29 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const HMethod_1 = require("./HMethod");
-const HServer_1 = require("./HServer");
-const HUploadManager_1 = require("./HUploadManager");
-const typit_1 = require("typit");
-const HFileSendType_1 = require("./HFileSendType");
-const server = new HServer_1.HServer();
-server.listen("/hello", {
-    method: HMethod_1.HMethod.POST,
-    handler: ((req, res) => __awaiter(this, void 0, void 0, function* () {
-        const body = req.getBody();
-        if (body.foo > 18)
-            res.send({ msg: true });
-        else
-            res.send({ m: 0 });
-    })),
-    types: {
-        foo: typit_1.StandardType.NUMBER
-    },
-    upload: {
-        location: HUploadManager_1.HUploadManagerLocationType.Payload,
-        sizeLimit: 16
-    }
-});
-server.listen("/file", {
-    method: HMethod_1.HMethod.GET,
-    handler: ((req, res) => __awaiter(this, void 0, void 0, function* () {
-        res.sendFile("/Users/elijahcobb/Downloads/Assignment8_Graph_Algorithm.pdf", {
-            name: "algo.pdf",
-            type: HFileSendType_1.HFileSendType.INLINE,
-            mime: {
-                type: "application",
-                subtype: "pdf"
-            }
-        });
-    }))
-});
-server.start(3000);
+var HEndpoint_1 = require("./HEndpoint");
+exports.HEndpoint = HEndpoint_1.HEndpoint;
+var HEndpointGroup_1 = require("./HEndpointGroup");
+exports.HEndpointGroup = HEndpointGroup_1.HEndpointGroup;
+var HError_1 = require("./HError");
+exports.HError = HError_1.HError;
+var HFileSendType_1 = require("./HFileSendType");
+exports.HFileSendType = HFileSendType_1.HFileSendType;
+var HFileSendTypeHelper_1 = require("./HFileSendTypeHelper");
+exports.HFileSendTypeHelper = HFileSendTypeHelper_1.HFileSendTypeHelper;
+var HMethod_1 = require("./HMethod");
+exports.HMethod = HMethod_1.HMethod;
+exports.HMethodHelper = HMethod_1.HMethodHelper;
+var HRequest_1 = require("./HRequest");
+exports.HRequest = HRequest_1.HRequest;
+var HResponse_1 = require("./HResponse");
+exports.HResponse = HResponse_1.HResponse;
+var HServer_1 = require("./HServer");
+exports.HServer = HServer_1.HServer;
+var HUploadManager_1 = require("./HUploadManager");
+exports.HUploadManager = HUploadManager_1.HUploadManager;
+exports.HUploadManagerLocationType = HUploadManager_1.HUploadManagerLocationType;
+var typit_1 = require("typit");
+exports.StandardType = typit_1.StandardType;
 //# sourceMappingURL=index.js.map

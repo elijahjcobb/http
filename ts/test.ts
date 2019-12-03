@@ -20,16 +20,43 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-export {HEndpointHandler, HEndpoint, HEndpointConstructorType} from "./HEndpoint";
-export {HEndpointGroup} from "./HEndpointGroup";
-export {HError} from "./HError";
-export {HFileSendOptions} from "./HFileSendOptions";
-export {HFileSendType} from "./HFileSendType";
-export {HFileSendTypeHelper} from "./HFileSendTypeHelper";
-export {HMethod, HMethodHelper} from "./HMethod";
-export {HMime} from "./HMime";
-export {HRequest} from "./HRequest";
-export {HResponse} from "./HResponse";
-export {HServer} from "./HServer";
-export {HUploadManager, HUploadManagerLocationType, HUploadManagerConstructorType} from "./HUploadManager";
-export {StandardType, ObjectTypeDefinition} from "typit";
+import {StandardType, HServer, HMethod, HRequest, HResponse, HUploadManagerLocationType, HFileSendType} from "./index";
+
+const server: HServer = new HServer();
+
+server.listen("/hello", {
+	method: HMethod.POST,
+	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+
+		const body: {foo: number} = req.getBody();
+
+		if (body.foo > 18) res.send({msg: true});
+		else res.send({m: 0});
+
+	}),
+	types: {
+		foo: StandardType.NUMBER
+	},
+	upload: {
+		location: HUploadManagerLocationType.Payload,
+		sizeLimit: 16
+	}
+});
+
+server.listen("/file", {
+	method: HMethod.GET,
+	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+
+		res.sendFile("/Users/elijahcobb/Downloads/Assignment8_Graph_Algorithm.pdf", {
+			name: "algo.pdf",
+			type: HFileSendType.INLINE,
+			mime: {
+				type: "application",
+				subtype: "pdf"
+			}
+		});
+
+	})
+});
+
+server.start(3000);
