@@ -77,7 +77,7 @@ export class HServer {
 
 				if (err instanceof HError) {
 
-					console.error(`${err.getStatusCode()} - ${err.getStatusMessage()}`);
+					console.error(`${err.getStatusCode()} - ${err.getInternalStatusMessage()}`);
 					return this.sendJSONToSocket({ error: err.getStatusMessage() }, err.getStatusCode(), res);
 
 				} else {

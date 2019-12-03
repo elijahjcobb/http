@@ -76,8 +76,6 @@ class HUploadManager {
                         if (!isNaN(lengthNum) && lengthNum > this.sizeLimit)
                             return reject(HError_1.HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
                     }
-                    else
-                        return reject(HError_1.HError.init().code(413).msg(`File too large. Limited to ${this.sizeLimit} bytes.`).show());
                 }
                 if (this.location === HUploadManagerLocationType.Payload) {
                     let payload = Buffer.alloc(0, 0);

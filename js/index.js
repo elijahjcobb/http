@@ -33,6 +33,7 @@ const HMethod_1 = require("./HMethod");
 const HServer_1 = require("./HServer");
 const HUploadManager_1 = require("./HUploadManager");
 const typit_1 = require("typit");
+const HFileSendType_1 = require("./HFileSendType");
 const server = new HServer_1.HServer();
 server.listen("/hello", {
     method: HMethod_1.HMethod.POST,
@@ -50,6 +51,19 @@ server.listen("/hello", {
         location: HUploadManager_1.HUploadManagerLocationType.Payload,
         sizeLimit: 16
     }
+});
+server.listen("/file", {
+    method: HMethod_1.HMethod.GET,
+    handler: ((req, res) => __awaiter(this, void 0, void 0, function* () {
+        res.sendFile("/Users/elijahcobb/Downloads/Assignment8_Graph_Algorithm.pdf", {
+            name: "algo.pdf",
+            type: HFileSendType_1.HFileSendType.INLINE,
+            mime: {
+                type: "application",
+                subtype: "pdf"
+            }
+        });
+    }))
 });
 server.start(3000);
 //# sourceMappingURL=index.js.map

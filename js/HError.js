@@ -49,6 +49,9 @@ class HError {
         else
             return "Internal server error.";
     }
+    getInternalStatusMessage() {
+        return this.message;
+    }
     static init() { return new HError(500, "Internal server error."); }
 }
 exports.HError = HError;

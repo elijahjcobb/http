@@ -23,6 +23,7 @@
 import * as FS from "fs";
 import { HRequest } from "./HRequest";
 import * as HTTP from "http";
+import { HFileSendOptions } from "./HFileSendOptions";
 export declare class HResponse {
     private readonly headers;
     private readonly res;
@@ -34,9 +35,9 @@ export declare class HResponse {
     private setTypeHeader;
     setStatusCode(value: number): void;
     setHeader(key: string, value: string | number): void;
-    sendFile(path: string): void;
+    sendFile(path: string, options?: HFileSendOptions): void;
     sendBuffer(buffer: Buffer): void;
-    sendStream(stream: FS.ReadStream): void;
+    sendStream(stream: FS.ReadStream, options?: HFileSendOptions): void;
     send(obj: object): void;
     write(data: Buffer): void;
     writeEnd(): void;

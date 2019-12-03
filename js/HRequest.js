@@ -45,6 +45,8 @@ class HRequest {
     fetchPayload() {
         if (this.payload === undefined)
             return;
+        if (this.payload.length === 0)
+            return;
         try {
             const payloadString = this.payload.toString("utf8");
             this.payloadObject = JSON.parse(payloadString);

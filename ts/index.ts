@@ -26,6 +26,7 @@ import { HRequest } from "./HRequest";
 import { HResponse } from "./HResponse";
 import { HUploadManagerLocationType } from "./HUploadManager";
 import { StandardType } from "typit";
+import { HFileSendType } from "./HFileSendType";
 
 const server: HServer = new HServer();
 
@@ -46,6 +47,22 @@ server.listen("/hello", {
 		location: HUploadManagerLocationType.Payload,
 		sizeLimit: 16
 	}
+});
+
+server.listen("/file", {
+	method: HMethod.GET,
+	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+
+		res.sendFile("/Users/elijahcobb/Downloads/Assignment8_Graph_Algorithm.pdf", {
+			name: "algo.pdf",
+			type: HFileSendType.INLINE,
+			mime: {
+				type: "application",
+				subtype: "pdf"
+			}
+		});
+
+	})
 });
 
 server.start(3000);

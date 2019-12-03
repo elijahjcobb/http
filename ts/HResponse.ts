@@ -21,12 +21,13 @@
  */
 
 import * as FS from "fs";
-import {Dictionary} from "@ejc-tsds/dictionary";
+import { Dictionary } from "@ejc-tsds/dictionary";
 import { HRequest } from "./HRequest";
 import * as HTTP from "http";
-import { PromReject, PromResolve } from "@elijahjcobb/prom-type";
 import { HError } from "./HError";
-import { OutgoingHttpHeaders } from "http";
+import { HFileSendOptions } from "./HFileSendOptions";
+import { HFileSendTypeHelper } from "./HFileSendTypeHelper";
+import * as Path from "path";
 
 export class HResponse {
 
@@ -44,10 +45,26 @@ export class HResponse {
 
 	}
 
-	private setHeaders(): void {
+	private setHeaders(options?: HFileSendOptions): void {
+
+		this.setHeader("X-Powered-By", "@elijahjcobb/hydrogen on NPM");
+
+		if (options) {
+
+			if (options.mime) this.setHeader("Content-Type", options.mime.type + "/" + options.mime.subtype);
+			if (options.length) this.setHeader("Content-Length", options.length);
+
+			let msg: string = HFileSendTypeHelper.typeToString(options.type);
+			if (options.name) msg += "; filename=\"" + options.name + "\"";
+
+			this.setHeader("Content-Disposition", msg);
+
+
+		}
+
+		console.log(this.headers.toObject());
 
 		const headers: HTTP.OutgoingHttpHeaders = this.headers.toObject() as HTTP.OutgoingHttpHeaders;
-		this.setHeader("X-Powered-By", "@elijahjcobb/hydrogen on NPM");
 		this.res.writeHead(this.statusCode, headers);
 
 	}
@@ -76,14 +93,17 @@ export class HResponse {
 
 	}
 
-	public sendFile(path: string): void {
+	public sendFile(path: string, options?: HFileSendOptions): void {
 
 		if (!FS.existsSync(path)) throw HError.init().msg("The path provided does not resolve to a file.");
+
+		if (options === undefined) options = {};
+		if (options.length === undefined) options.length = FS.statSync(path).size;
 
 		try {
 
 			const readableStream: FS.ReadStream = FS.createReadStream(path);
-			this.sendStream(readableStream);
+			this.sendStream(readableStream, options);
 
 		} catch (e) {
 
@@ -101,9 +121,9 @@ export class HResponse {
 
 	}
 
-	public sendStream(stream: FS.ReadStream): void {
+	public sendStream(stream: FS.ReadStream, options?: HFileSendOptions): void {
 
-		this.setHeaders();
+		this.setHeaders(options);
 		stream.pipe(this.res);
 
 	}

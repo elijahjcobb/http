@@ -64,7 +64,7 @@ class HServer {
                 }
             }))().then(() => { }).catch((err) => {
                 if (err instanceof HError_1.HError) {
-                    console.error(`${err.getStatusCode()} - ${err.getStatusMessage()}`);
+                    console.error(`${err.getStatusCode()} - ${err.getInternalStatusMessage()}`);
                     return this.sendJSONToSocket({ error: err.getStatusMessage() }, err.getStatusCode(), res);
                 }
                 else {

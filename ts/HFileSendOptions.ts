@@ -19,17 +19,13 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-export declare class HError {
-    private message;
-    private statusCode;
-    private shouldShow;
-    constructor(statusCode: number, message: string);
-    msg(value: string): HError;
-    code(value: number): HError;
-    show(): HError;
-    hide(): HError;
-    getStatusCode(): number;
-    getStatusMessage(): string;
-    getInternalStatusMessage(): string;
-    static init(): HError;
+
+import { HMime } from "./HMime";
+import { HFileSendType } from "./HFileSendType";
+
+export interface HFileSendOptions {
+	type?: HFileSendType;
+	name?: string;
+	mime?: HMime;
+	length?: number;
 }

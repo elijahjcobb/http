@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Copyright 2019
  *
@@ -19,17 +21,20 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-export declare class HError {
-    private message;
-    private statusCode;
-    private shouldShow;
-    constructor(statusCode: number, message: string);
-    msg(value: string): HError;
-    code(value: number): HError;
-    show(): HError;
-    hide(): HError;
-    getStatusCode(): number;
-    getStatusMessage(): string;
-    getInternalStatusMessage(): string;
-    static init(): HError;
+const HFileSendType_1 = require("./HFileSendType");
+class HFileSendTypeHelper {
+    static typeToString(value) {
+        if (value === HFileSendType_1.HFileSendType.INLINE)
+            return "inline";
+        else
+            return "attachment";
+    }
+    static stringToType(value) {
+        if (value === "inline")
+            return HFileSendType_1.HFileSendType.INLINE;
+        else
+            return HFileSendType_1.HFileSendType.ATTACHMENT;
+    }
 }
+exports.HFileSendTypeHelper = HFileSendTypeHelper;
+//# sourceMappingURL=HFileSendTypeHelper.js.map

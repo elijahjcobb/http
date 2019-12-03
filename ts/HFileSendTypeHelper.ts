@@ -19,17 +19,21 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-export declare class HError {
-    private message;
-    private statusCode;
-    private shouldShow;
-    constructor(statusCode: number, message: string);
-    msg(value: string): HError;
-    code(value: number): HError;
-    show(): HError;
-    hide(): HError;
-    getStatusCode(): number;
-    getStatusMessage(): string;
-    getInternalStatusMessage(): string;
-    static init(): HError;
+import { HFileSendType } from "./HFileSendType";
+
+export abstract class HFileSendTypeHelper {
+
+ 	public static typeToString(value: HFileSendType | undefined): string {
+
+ 		if (value === HFileSendType.INLINE) return "inline";
+		else return "attachment";
+
+	}
+
+	public static stringToType(value: string): HFileSendType {
+
+		if (value === "inline") return HFileSendType.INLINE;
+		else return HFileSendType.ATTACHMENT;
+	}
+
 }

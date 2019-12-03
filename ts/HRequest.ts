@@ -62,6 +62,7 @@ export class HRequest {
 	public fetchPayload(): void {
 
 		if (this.payload === undefined) return;
+		if (this.payload.length === 0) return;
 
 		try {
 

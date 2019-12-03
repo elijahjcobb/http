@@ -19,17 +19,8 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-export declare class HError {
-    private message;
-    private statusCode;
-    private shouldShow;
-    constructor(statusCode: number, message: string);
-    msg(value: string): HError;
-    code(value: number): HError;
-    show(): HError;
-    hide(): HError;
-    getStatusCode(): number;
-    getStatusMessage(): string;
-    getInternalStatusMessage(): string;
-    static init(): HError;
+
+export enum HFileSendType {
+	INLINE,
+	ATTACHMENT
 }

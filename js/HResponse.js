@@ -24,6 +24,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const FS = require("fs");
 const dictionary_1 = require("@ejc-tsds/dictionary");
 const HError_1 = require("./HError");
+const HFileSendTypeHelper_1 = require("./HFileSendTypeHelper");
 class HResponse {
     constructor(req, res) {
         this.headers = new dictionary_1.Dictionary();
@@ -31,9 +32,20 @@ class HResponse {
         this.res = res;
         this.startWrite = false;
     }
-    setHeaders() {
-        const headers = this.headers.toObject();
+    setHeaders(options) {
         this.setHeader("X-Powered-By", "@elijahjcobb/hydrogen on NPM");
+        if (options) {
+            if (options.mime)
+                this.setHeader("Content-Type", options.mime.type + "/" + options.mime.subtype);
+            if (options.length)
+                this.setHeader("Content-Length", options.length);
+            let msg = HFileSendTypeHelper_1.HFileSendTypeHelper.typeToString(options.type);
+            if (options.name)
+                msg += "; filename=\"" + options.name + "\"";
+            this.setHeader("Content-Disposition", msg);
+        }
+        console.log(this.headers.toObject());
+        const headers = this.headers.toObject();
         this.res.writeHead(this.statusCode, headers);
     }
     setLengthHeader(value) {
@@ -48,12 +60,16 @@ class HResponse {
     setHeader(key, value) {
         this.headers.set(key, value);
     }
-    sendFile(path) {
+    sendFile(path, options) {
         if (!FS.existsSync(path))
             throw HError_1.HError.init().msg("The path provided does not resolve to a file.");
+        if (options === undefined)
+            options = {};
+        if (options.length === undefined)
+            options.length = FS.statSync(path).size;
         try {
             const readableStream = FS.createReadStream(path);
-            this.sendStream(readableStream);
+            this.sendStream(readableStream, options);
         }
         catch (e) {
             throw HError_1.HError.init().msg("Unable to pipe readable stream to response.");
@@ -64,8 +80,8 @@ class HResponse {
         this.write(buffer);
         this.writeEnd();
     }
-    sendStream(stream) {
-        this.setHeaders();
+    sendStream(stream, options) {
+        this.setHeaders(options);
         stream.pipe(this.res);
     }
     send(obj) {

@@ -66,6 +66,12 @@ export class HError {
 
 	}
 
+	public getInternalStatusMessage(): string {
+
+		return this.message;
+
+	}
+
 	public static init(): HError { return new HError(500, "Internal server error."); }
 
 }
