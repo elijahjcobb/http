@@ -20,7 +20,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import {StandardType, HServer, HMethod, HRequest, HResponse, HUploadManagerLocationType, HFileSendType} from "./index";
+import {HFileSendType, HMethod, HRequest, HResponse, HServer, HUploadManagerLocationType, StandardType} from "./index";
 
 const server: HServer = new HServer();
 
@@ -55,6 +55,24 @@ server.listen("/file", {
 				subtype: "pdf"
 			}
 		});
+
+	})
+});
+
+server.listen("/goo", {
+	method: HMethod.GET,
+	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+
+		res.redirect("/notgoo");
+
+	})
+});
+
+server.listen("/notgoo", {
+	method: HMethod.GET,
+	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+
+		res.send({msg: "Hello, Elijah!"});
 
 	})
 });

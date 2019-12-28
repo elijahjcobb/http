@@ -93,6 +93,16 @@ export class HResponse {
 
 	}
 
+	public redirect(url: string): void {
+
+		this.headers.set("Location", url);
+		this.setStatusCode(302);
+
+		this.write();
+		this.writeEnd();
+
+	}
+
 	public sendFile(path: string, options?: HFileSendOptions): void {
 
 		if (!FS.existsSync(path)) throw HError.init().msg("The path provided does not resolve to a file.");
@@ -146,12 +156,12 @@ export class HResponse {
 
 	}
 
-	public write(data: Buffer): void {
+	public write(data?: Buffer): void {
 
 		if (!this.startWrite) this.setHeaders();
 		this.startWrite = true;
 
-		this.res.write(data);
+		if (data) this.res.write(data);
 
 	}
 
