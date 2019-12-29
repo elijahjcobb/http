@@ -1,7 +1,7 @@
 {
 	"name": "@elijahjcobb/hydrogen",
 	"version": "0.1.0",
-	"description": "",
+	"description": "Hydrogen is a custom HTTP server builder that is easy to use and has powerful functionality.",
 	"main": "js/index",
 	"types": "dts/index",
 	"scripts": {
@@ -18,7 +18,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"keywords": [],
+	"keywords": ["http", "server", "api", "rest", "backend"],
 	"author": "Elijah Cobb <elijah@elijahcobb.com> (https://elijahcobb.com/)",
 	"license": "MIT",
 	"bugs": {

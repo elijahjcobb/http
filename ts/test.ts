@@ -59,7 +59,7 @@ server.listen("/file", {
 	})
 });
 
-server.listen("/goo", {
+server.listen("/redirect", {
 	method: HMethod.GET,
 	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
 
@@ -68,11 +68,29 @@ server.listen("/goo", {
 	})
 });
 
+server.listen("/goo", {
+	method: HMethod.GET,
+	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+
+		res.redirect("https://google.com");
+
+	})
+});
+
 server.listen("/notgoo", {
 	method: HMethod.GET,
 	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
 
-		res.send({msg: "Hello, Elijah!"});
+		res.send({msg: "HELLO!"});
+
+	})
+});
+
+server.dynamicListen({
+	method: HMethod.GET,
+	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+
+		res.send({msg: req.getEndpoint()});
 
 	})
 });
