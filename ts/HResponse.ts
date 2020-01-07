@@ -28,6 +28,7 @@ import { HError } from "./HError";
 import { HFileSendOptions } from "./HFileSendOptions";
 import { HFileSendTypeHelper } from "./HFileSendTypeHelper";
 import * as Path from "path";
+import {HObject} from "./HObject";
 
 export class HResponse {
 
@@ -135,6 +136,12 @@ export class HResponse {
 
 		this.setHeaders(options);
 		stream.pipe(this.res);
+
+	}
+
+	public sendHObject(obj: HObject): void {
+
+		this.send(obj.bond());
 
 	}
 

@@ -31,5 +31,6 @@ export {HMime} from "./HMime";
 export {HRequest} from "./HRequest";
 export {HResponse} from "./HResponse";
 export {HServer} from "./HServer";
+export {HObject} from "./HObject";
 export {HUploadManager, HUploadManagerLocationType, HUploadManagerConstructorType} from "./HUploadManager";
 export * from "typit";
