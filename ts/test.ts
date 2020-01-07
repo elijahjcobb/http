@@ -20,9 +20,30 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import {HFileSendType, HMethod, HRequest, HResponse, HServer, HUploadManagerLocationType, StandardType} from "./index";
+import {
+	HFileSendType,
+	HMethod,
+	HObject,
+	HRequest,
+	HResponse,
+	HServer,
+	HUploadManagerLocationType,
+	StandardType
+} from "./index";
 
 const server: HServer = new HServer();
+
+class UserTest implements HObject {
+
+	public name: string | undefined;
+	public password: string | undefined;
+
+	public bond(): object {
+		return {
+			name: this.name
+		};
+	}
+}
 
 server.listen("/hello", {
 	method: HMethod.POST,
@@ -30,7 +51,11 @@ server.listen("/hello", {
 
 		const body: {foo: number} = req.getBody();
 
-		if (body.foo > 18) res.send({msg: true});
+		const user: UserTest = new UserTest();
+		user.name = "John";
+		user.password = "p";
+
+		if (body.foo > 18) res.sendHObject(user);
 		else res.send({m: 0});
 
 	}),

@@ -100,6 +100,7 @@ export class HEndpointGroup {
 	public getHandler(url: string, method: HMethod): HEndpoint | undefined {
 
 		if (url.charAt(0) === "/") url = url.substring(1);
+		if (url.charAt(url.length - 1) === "/") url = url.substring(0, url.length - 1);
 		return this.findHandlerForEndpoint(new Stack<string>(url.split("/")), method);
 
 	}
