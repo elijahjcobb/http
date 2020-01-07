@@ -1,6 +1,6 @@
 {
 	"name": "@elijahjcobb/hydrogen",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Hydrogen is a custom HTTP server builder that is easy to use and has powerful functionality.",
 	"main": "js/index",
 	"types": "dts/index",
