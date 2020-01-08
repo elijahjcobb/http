@@ -19,14 +19,15 @@
  * ORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
- 
+import {HErrorStatusCode} from "./HErrorStatusCode";
+
 export class HError {
 
 	private message: string;
-	private statusCode: number;
+	private statusCode: HErrorStatusCode;
 	private shouldShow: boolean;
 
-	public constructor(statusCode: number, message: string) {
+	public constructor(statusCode: HErrorStatusCode, message: string) {
 
 		this.message = message;
 		this.statusCode = statusCode;
@@ -42,7 +43,7 @@ export class HError {
 
 	}
 
-	public code(value: number): HError {
+	public code(value: HErrorStatusCode): HError {
 
 		this.statusCode = value;
 
@@ -53,10 +54,10 @@ export class HError {
 	public show(): HError { this.shouldShow = true; return this; }
 	public hide(): HError { this.shouldShow = false; return this; }
 
-	public getStatusCode(): number {
+	public getStatusCode(): HErrorStatusCode {
 
 		if (this.shouldShow) return this.statusCode;
-		else return 500;
+		else return HErrorStatusCode.InternalServerError;
 
 	}
 	public getStatusMessage(): string {
@@ -72,6 +73,6 @@ export class HError {
 
 	}
 
-	public static init(): HError { return new HError(500, "Internal server error."); }
+	public static init(): HError { return new HError(HErrorStatusCode.InternalServerError, "Internal server error."); }
 
 }

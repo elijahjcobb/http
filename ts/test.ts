@@ -30,6 +30,7 @@ import {
 	HUploadManagerLocationType,
 	StandardType
 } from "./index";
+import {HErrorStatusCode} from "./HErrorStatusCode";
 
 const server: HServer = new HServer();
 
@@ -56,7 +57,7 @@ server.listen("/hello", {
 		user.password = "p";
 
 		if (body.foo > 18) res.sendHObject(user);
-		else res.send({m: 0});
+		else return res.error({code: HErrorStatusCode.ImATeapot, show: true});
 
 	}),
 	types: {

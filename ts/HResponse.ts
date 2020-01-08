@@ -29,6 +29,7 @@ import { HFileSendOptions } from "./HFileSendOptions";
 import { HFileSendTypeHelper } from "./HFileSendTypeHelper";
 import * as Path from "path";
 import {HObject} from "./HObject";
+import {HErrorStatusCode} from "./HErrorStatusCode";
 
 export class HResponse {
 
@@ -79,6 +80,37 @@ export class HResponse {
 	private setTypeHeader(value: string): void {
 
 		this.setHeader("Content-Type", value);
+
+	}
+
+	public err(code?: HErrorStatusCode, msg?: string, show: boolean = true): void {
+
+		this.error({code, msg, show});
+
+	}
+
+	public error(obj: {code?: HErrorStatusCode, msg?: string, show?: boolean}): void {
+
+		let err: HError = HError.init();
+
+		if (obj.code !== undefined) err = err.code(obj.code);
+		if (obj.msg !== undefined) err = err.msg(obj.msg);
+		obj.show ? err.show() : err.hide();
+
+		this.sendError(err);
+
+	}
+
+	public sendError(err: HError): void {
+
+		this.setStatusCode(err.getStatusCode());
+		this.send({
+			error: err.getStatusMessage(),
+			code: {
+				value: err.getStatusCode(),
+				readable: HErrorStatusCode[err.getStatusCode()]
+			}
+		});
 
 	}
 

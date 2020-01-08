@@ -21,13 +21,14 @@
  */
 
 import * as HTTP from "http";
-import { HRequest } from "./HRequest";
-import { HEndpoint, HEndpointConstructorType, HEndpointHandler } from "./HEndpoint";
-import { HEndpointGroup } from "./HEndpointGroup";
-import { HResponse } from "./HResponse";
-import { HError } from "./HError";
-import { HUploadManager, HUploadManagerLocationType } from "./HUploadManager";
-import { ObjectTypeDefinition } from "typit";
+import {HRequest} from "./HRequest";
+import {HEndpoint, HEndpointConstructorType, HEndpointHandler} from "./HEndpoint";
+import {HEndpointGroup} from "./HEndpointGroup";
+import {HResponse} from "./HResponse";
+import {HError} from "./HError";
+import {HUploadManager, HUploadManagerLocationType} from "./HUploadManager";
+import {ObjectTypeDefinition} from "typit";
+import {HErrorStatusCode} from "./HErrorStatusCode";
 
 export class HServer {
 
@@ -39,9 +40,10 @@ export class HServer {
 		this.rootEndpointGroup = new HEndpointGroup();
 		this.server = HTTP.createServer((req: HTTP.IncomingMessage, res: HTTP.ServerResponse): void => {
 
-			(async(): Promise<void> => {
+			const request: HRequest = new HRequest(req);
+			const response: HResponse = new HResponse(request, res);
 
-				const request: HRequest = new HRequest(req);
+			(async(): Promise<void> => {
 
 				const endpoint: HEndpoint | undefined = this.rootEndpointGroup.getHandler(request.getUrl(), request.getMethod());
 
@@ -59,7 +61,6 @@ export class HServer {
 					await uploadManager.handleRequest(request);
 
 					const handler: HEndpointHandler = endpoint.getHandler();
-					const response: HResponse = new HResponse(request, res);
 
 					const types: ObjectTypeDefinition | undefined = endpoint.getRequiredType();
 					request.fetchPayload();
@@ -67,53 +68,25 @@ export class HServer {
 
 					await handler(request, response);
 
-				} else {
-
-					return this.sendJSONToSocket({error: "Path does not exist."}, 404, res);
-
-				}
+				} else return response.error({code: HErrorStatusCode.NotFound, msg: "Path does not exist."});
 
 			})().then(() => {}).catch((err: any) => {
 
 				if (err instanceof HError) {
 
 					console.error(`${err.getStatusCode()} - ${err.getInternalStatusMessage()}`);
-					return this.sendJSONToSocket({ error: err.getStatusMessage() }, err.getStatusCode(), res);
+					return response.sendError(err);
 
 				} else {
 
 					console.error(err);
-					return this.sendJSONToSocket({ error: "Internal server error." }, 500, res);
+					return response.error({code: HErrorStatusCode.InternalServerError, msg: "Internal Server Error."});
 
 				}
 
 			});
 
 		});
-
-	}
-
-	private sendJSONToSocket(json: object, code: number, res: HTTP.ServerResponse): void {
-
-		let payload: Buffer | undefined;
-
-		res.setHeader("Content-Type", "application/json");
-
-		try {
-
-			const payloadString: string = JSON.stringify(json);
-			payload = Buffer.from(payloadString, "utf8");
-			res.writeHead(code);
-			res.write(payload);
-
-		} catch (e) {
-
-			res.writeHead(500);
-			res.write(JSON.stringify("{}"));
-
-		}
-
-		res.end("\n");
 
 	}
 
