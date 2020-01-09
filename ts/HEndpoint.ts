@@ -27,7 +27,6 @@ import { ObjectTypeDefinition } from "typit";
 import { HRequest } from "./HRequest";
 
 export type HEndpointConstructorType = {
-	method: HMethod;
 	handler: HEndpointHandler;
 	types?: ObjectTypeDefinition;
 	upload?: HUploadManagerConstructorType;
@@ -43,10 +42,10 @@ export class HEndpoint {
 	private readonly requiredType: ObjectTypeDefinition | undefined;
 	private readonly uploadManager: HUploadManager | undefined;
 
-	public constructor(endpoint: string, obj: HEndpointConstructorType) {
+	public constructor(endpoint: string, method: HMethod, obj: HEndpointConstructorType) {
 
 		this.endpoint = endpoint;
-		this.method = obj.method;
+		this.method = method;
 		this.handler = obj.handler;
 		this.requiredType = obj.types;
 		if (obj.upload) this.uploadManager = new HUploadManager(obj.upload);

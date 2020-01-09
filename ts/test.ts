@@ -22,15 +22,14 @@
 
 import {
 	HFileSendType,
-	HMethod,
 	HObject,
 	HRequest,
 	HResponse,
 	HServer,
 	HUploadManagerLocationType,
-	StandardType
+	StandardType,
+	HErrorStatusCode
 } from "./index";
-import {HErrorStatusCode} from "./HErrorStatusCode";
 
 const server: HServer = new HServer();
 
@@ -46,8 +45,7 @@ class UserTest implements HObject {
 	}
 }
 
-server.listen("/hello", {
-	method: HMethod.POST,
+server.post("/hello", {
 	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
 
 		const body: {foo: number} = req.getBody();
@@ -69,56 +67,33 @@ server.listen("/hello", {
 	}
 });
 
-server.listen("/file", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+server.get("/file", async (req: HRequest, res: HResponse): Promise<void> => {
 
-		res.sendFile("/Users/elijahcobb/Downloads/Assignment8_Graph_Algorithm.pdf", {
-			name: "algo.pdf",
-			type: HFileSendType.INLINE,
-			mime: {
-				type: "application",
-				subtype: "pdf"
-			}
-		});
+	res.sendFile("/home/elijahcobb/Documents/hydro-test.txt", {
+		name: "hydro.txt",
+		type: HFileSendType.ATTACHMENT,
+		mime: {
+			type: "application",
+			subtype: "txt"
+		}
+	});
 
-	})
 });
 
-server.listen("/redirect", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.redirect("/notgoo");
-
-	})
+server.get("/google", async (req: HRequest, res: HResponse): Promise<void> => {
+	res.redirect("https://google.com");
 });
 
-server.listen("/goo", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+server.getDynamic(async (req: HRequest, res: HResponse): Promise<void> => {
 
-		res.redirect("https://google.com");
+	res.send({msg: "GET " + req.getEndpoint()});
 
-	})
 });
 
-server.listen("/notgoo", {
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
+server.postDynamic(async (req: HRequest, res: HResponse): Promise<void> => {
 
-		res.send({msg: "HELLO!"});
+	res.send({msg: "POST " + req.getEndpoint()});
 
-	})
 });
 
-server.dynamicListen({
-	method: HMethod.GET,
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		res.send({msg: req.getEndpoint()});
-
-	})
-});
-
-server.start(3000);
+server.start();

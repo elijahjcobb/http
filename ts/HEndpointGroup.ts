@@ -29,7 +29,7 @@ import { HMethod, HMethodHelper } from "./HMethod";
 
 export class HEndpointGroup {
 
-	private endpoints: Dictionary<string, HEndpointGroup | HEndpoint>;
+	private endpoints: Dictionary<HMethod, Dictionary<string, HEndpointGroup | HEndpoint>>;
 	private path: string;
 	private postProcessHandler: ((req: HRequest, res: HResponse) => Promise<void>) | undefined;
 	private static WILDCARD_KEY_ENDPOINT: string = "*e*";
@@ -38,7 +38,8 @@ export class HEndpointGroup {
 	public constructor(path: string = "") {
 
 		this.path = path;
-		this.endpoints = new Dictionary<string, HEndpointGroup | HEndpoint>();
+
+		this.endpoints = new Dictionary<HMethod, Dictionary<string, HEndpointGroup | HEndpoint>>();
 
 	}
 
@@ -47,9 +48,9 @@ export class HEndpointGroup {
 		const current: string | undefined = endpoints.pop();
 		if (current == undefined) return undefined;
 
-		let entryForKey: HEndpointGroup | HEndpoint | undefined = this.endpoints.get(current);
-		if (entryForKey === undefined && endpoints.peek() !== undefined) entryForKey = this.endpoints.get(HEndpointGroup.WILDCARD_KEY_GROUP);
-		if (entryForKey === undefined && endpoints.peek() == undefined) entryForKey = this.endpoints.get(HEndpointGroup.WILDCARD_KEY_ENDPOINT);
+		let entryForKey: HEndpointGroup | HEndpoint | undefined = this.endpoints.get(method)?.get(current);
+		if (entryForKey === undefined && endpoints.peek() !== undefined) entryForKey = this.endpoints.get(method)?.get(HEndpointGroup.WILDCARD_KEY_GROUP);
+		if (entryForKey === undefined && endpoints.peek() == undefined) entryForKey = this.endpoints.get(method)?.get(HEndpointGroup.WILDCARD_KEY_ENDPOINT);
 
 		if (entryForKey === undefined) return;
 		if (entryForKey instanceof HEndpoint && endpoints.peek() == undefined && entryForKey.getMethod() === method) return entryForKey;
@@ -70,30 +71,36 @@ export class HEndpointGroup {
 
 	}
 
-	public listen(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType): void {
+	public listen(endpoint: string, method: HMethod, listener: HEndpointGroup | HEndpointConstructorType): void {
 
 		if (endpoint.charAt(0) === "/") endpoint = endpoint.substring(1);
+
+		let endpointsForMethod: Dictionary<string, HEndpointGroup | HEndpoint> | undefined = this.endpoints.get(method);
+		if (endpointsForMethod === undefined) {
+			endpointsForMethod = new Dictionary<string, HEndpointGroup | HEndpoint>();
+			this.endpoints.set(method, endpointsForMethod);
+		}
 
 		if (listener instanceof HEndpointGroup) {
 
 			listener.path = endpoint;
-			this.endpoints.set(endpoint, listener);
+			endpointsForMethod.set(endpoint, listener);
 
 		} else {
 
-			this.endpoints.set(endpoint, new HEndpoint(endpoint, listener));
+			endpointsForMethod.set(endpoint, new HEndpoint(endpoint, method, listener));
 
 		}
 
 	}
 
-	public dynamicListen(listener: HEndpointGroup | HEndpointConstructorType): void {
+	public dynamicListen(method: HMethod, listener: HEndpointGroup | HEndpointConstructorType): void {
 
 		const endpoint: string = listener instanceof HEndpointGroup
 			? HEndpointGroup.WILDCARD_KEY_GROUP
 			: HEndpointGroup.WILDCARD_KEY_ENDPOINT;
 
-		this.listen(endpoint, listener);
+		this.listen(endpoint, method, listener);
 
 	}
 

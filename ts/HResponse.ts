@@ -104,6 +104,9 @@ export class HResponse {
 	public sendError(err: HError): void {
 
 		this.setStatusCode(err.getStatusCode());
+
+		console.error(err);
+
 		this.send({
 			error: err.getStatusMessage(),
 			code: {

@@ -29,6 +29,7 @@ import {HError} from "./HError";
 import {HUploadManager, HUploadManagerLocationType} from "./HUploadManager";
 import {ObjectTypeDefinition} from "typit";
 import {HErrorStatusCode} from "./HErrorStatusCode";
+import {HMethod} from "./HMethod";
 
 export class HServer {
 
@@ -68,7 +69,7 @@ export class HServer {
 
 					await handler(request, response);
 
-				} else return response.error({code: HErrorStatusCode.NotFound, msg: "Path does not exist."});
+				} else return response.error({code: HErrorStatusCode.NotFound, msg: "Path does not exist.", show: true });
 
 			})().then(() => {}).catch((err: any) => {
 
@@ -90,15 +91,69 @@ export class HServer {
 
 	}
 
-	public listen(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType): void {
+	public listen(endpoint: string, method: HMethod, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
 
-		this.rootEndpointGroup.listen(endpoint, listener);
+		if (typeof listener === "function") return this.rootEndpointGroup.listen(endpoint, method, { handler: listener});
+		this.rootEndpointGroup.listen(endpoint, method, listener);
 
 	}
 
-	public dynamicListen(listener: HEndpointGroup | HEndpointConstructorType): void {
+	public dynamicListen(method: HMethod, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
 
-		this.rootEndpointGroup.dynamicListen(listener);
+		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(method, { handler: listener});
+		this.rootEndpointGroup.dynamicListen(method, listener);
+
+	}
+
+	public getDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(HMethod.GET, { handler: listener});
+		this.rootEndpointGroup.dynamicListen(HMethod.GET, listener);
+
+	}
+
+	public putDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(HMethod.PUT, { handler: listener});
+		this.rootEndpointGroup.dynamicListen(HMethod.PUT, listener);
+
+	}
+
+	public postDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(HMethod.POST, { handler: listener});
+		this.rootEndpointGroup.dynamicListen(HMethod.POST, listener);
+
+	}
+
+	public deleteDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(HMethod.DELETE, { handler: listener});
+		this.rootEndpointGroup.dynamicListen(HMethod.DELETE, listener);
+
+	}
+
+	public get(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		this.listen(endpoint, HMethod.GET, listener);
+
+	}
+
+	public post(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		this.listen(endpoint, HMethod.POST, listener);
+
+	}
+
+	public put(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		this.listen(endpoint, HMethod.PUT, listener);
+
+	}
+
+	public delete(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		this.listen(endpoint, HMethod.DELETE, listener);
 
 	}
 
