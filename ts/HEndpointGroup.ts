@@ -22,7 +22,7 @@
 
 import { Dictionary } from "@ejc-tsds/dictionary";
 import { Stack } from "@ejc-tsds/stack";
-import { HEndpoint, HEndpointConstructorType } from "./HEndpoint";
+import {HEndpoint, HEndpointConstructorType, HEndpointHandler} from "./HEndpoint";
 import { HRequest } from "./HRequest";
 import { HResponse } from "./HResponse";
 import { HMethod, HMethodHelper } from "./HMethod";
@@ -71,7 +71,9 @@ export class HEndpointGroup {
 
 	}
 
-	public listen(endpoint: string, method: HMethod, listener: HEndpointGroup | HEndpointConstructorType): void {
+	public listen(endpoint: string, method: HMethod, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.listen(endpoint, method, { handler: listener});
 
 		if (endpoint.charAt(0) === "/") endpoint = endpoint.substring(1);
 
@@ -94,7 +96,9 @@ export class HEndpointGroup {
 
 	}
 
-	public dynamicListen(method: HMethod, listener: HEndpointGroup | HEndpointConstructorType): void {
+	public dynamicListen(method: HMethod, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.dynamicListen(method, { handler: listener});
 
 		const endpoint: string = listener instanceof HEndpointGroup
 			? HEndpointGroup.WILDCARD_KEY_GROUP
@@ -109,6 +113,58 @@ export class HEndpointGroup {
 		if (url.charAt(0) === "/") url = url.substring(1);
 		if (url.charAt(url.length - 1) === "/") url = url.substring(0, url.length - 1);
 		return this.findHandlerForEndpoint(new Stack<string>(url.split("/")), method);
+
+	}
+
+	public getDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.dynamicListen(HMethod.GET, { handler: listener});
+		this.dynamicListen(HMethod.GET, listener);
+
+	}
+
+	public putDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.dynamicListen(HMethod.PUT, { handler: listener});
+		this.dynamicListen(HMethod.PUT, listener);
+
+	}
+
+	public postDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.dynamicListen(HMethod.POST, { handler: listener});
+		this.dynamicListen(HMethod.POST, listener);
+
+	}
+
+	public deleteDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		if (typeof listener === "function") return this.dynamicListen(HMethod.DELETE, { handler: listener});
+		this.dynamicListen(HMethod.DELETE, listener);
+
+	}
+
+	public get(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		this.listen(endpoint, HMethod.GET, listener);
+
+	}
+
+	public post(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		this.listen(endpoint, HMethod.POST, listener);
+
+	}
+
+	public put(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		this.listen(endpoint, HMethod.PUT, listener);
+
+	}
+
+	public delete(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+
+		this.listen(endpoint, HMethod.DELETE, listener);
 
 	}
 

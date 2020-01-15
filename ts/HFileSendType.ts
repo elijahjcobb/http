@@ -21,6 +21,6 @@
  */
 
 export enum HFileSendType {
-	INLINE,
-	ATTACHMENT
+	PREVIEW,
+	DOWNLOAD
 }

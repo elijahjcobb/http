@@ -22,144 +22,72 @@
 
 import * as HTTP from "http";
 import {HRequest} from "./HRequest";
-import {HEndpoint, HEndpointConstructorType, HEndpointHandler} from "./HEndpoint";
+import {HEndpoint, HEndpointHandler} from "./HEndpoint";
 import {HEndpointGroup} from "./HEndpointGroup";
 import {HResponse} from "./HResponse";
 import {HError} from "./HError";
 import {HUploadManager, HUploadManagerLocationType} from "./HUploadManager";
 import {ObjectTypeDefinition} from "typit";
 import {HErrorStatusCode} from "./HErrorStatusCode";
-import {HMethod} from "./HMethod";
 
-export class HServer {
+export abstract class HServer {
 
-	private server: HTTP.Server;
 	private rootEndpointGroup: HEndpointGroup;
 
-	public constructor() {
+	protected constructor(endpointGroup: HEndpointGroup) {
 
-		this.rootEndpointGroup = new HEndpointGroup();
-		this.server = HTTP.createServer((req: HTTP.IncomingMessage, res: HTTP.ServerResponse): void => {
+		this.rootEndpointGroup = endpointGroup;
+		this.rootHandler = this.rootHandler.bind(this);
 
-			const request: HRequest = new HRequest(req);
-			const response: HResponse = new HResponse(request, res);
+	}
 
-			(async(): Promise<void> => {
+	protected rootHandler(req: HTTP.IncomingMessage, res: HTTP.ServerResponse): void {
 
-				const endpoint: HEndpoint | undefined = this.rootEndpointGroup.getHandler(request.getUrl(), request.getMethod());
+		const request: HRequest = new HRequest(req);
+		const response: HResponse = new HResponse(request, res);
 
-				if (endpoint) {
+		(async(): Promise<void> => {
 
-					let uploadManager: HUploadManager | undefined = endpoint.getUploadManager();
+			const endpoint: HEndpoint | undefined = this.rootEndpointGroup.getHandler(request.getUrl(), request.getMethod());
 
-					if (uploadManager === undefined) {
-						uploadManager = new HUploadManager({
-							sizeLimit: 5_000_000,
-							location: HUploadManagerLocationType.Payload
-						});
-					}
+			if (endpoint) {
 
-					await uploadManager.handleRequest(request);
+				let uploadManager: HUploadManager | undefined = endpoint.getUploadManager();
 
-					const handler: HEndpointHandler = endpoint.getHandler();
-
-					const types: ObjectTypeDefinition | undefined = endpoint.getRequiredType();
-					request.fetchPayload();
-					if (types !== undefined) request.verifyPayloadAgainstTypeDefinition(types);
-
-					await handler(request, response);
-
-				} else return response.error({code: HErrorStatusCode.NotFound, msg: "Path does not exist.", show: true });
-
-			})().then(() => {}).catch((err: any) => {
-
-				if (err instanceof HError) {
-
-					console.error(`${err.getStatusCode()} - ${err.getInternalStatusMessage()}`);
-					return response.sendError(err);
-
-				} else {
-
-					console.error(err);
-					return response.error({code: HErrorStatusCode.InternalServerError, msg: "Internal Server Error."});
-
+				if (uploadManager === undefined) {
+					uploadManager = new HUploadManager({
+						sizeLimit: 5_000_000,
+						location: HUploadManagerLocationType.Payload
+					});
 				}
 
-			});
+				await uploadManager.handleRequest(request);
+
+				const handler: HEndpointHandler = endpoint.getHandler();
+
+				const types: ObjectTypeDefinition | undefined = endpoint.getRequiredType();
+				request.fetchPayload();
+				if (types !== undefined) request.verifyPayloadAgainstTypeDefinition(types);
+
+				await handler(request, response);
+
+			} else return response.error({code: HErrorStatusCode.NotFound, msg: "Path does not exist.", show: true });
+
+		})().then(() => {}).catch((err: any) => {
+
+			if (err instanceof HError) {
+
+				console.error(`${err.getStatusCode()} - ${err.getInternalStatusMessage()}`);
+				return response.sendError(err);
+
+			} else {
+
+				console.error(err);
+				return response.error({code: HErrorStatusCode.InternalServerError, msg: "Internal Server Error."});
+
+			}
 
 		});
-
-	}
-
-	public listen(endpoint: string, method: HMethod, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		if (typeof listener === "function") return this.rootEndpointGroup.listen(endpoint, method, { handler: listener});
-		this.rootEndpointGroup.listen(endpoint, method, listener);
-
-	}
-
-	public dynamicListen(method: HMethod, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(method, { handler: listener});
-		this.rootEndpointGroup.dynamicListen(method, listener);
-
-	}
-
-	public getDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(HMethod.GET, { handler: listener});
-		this.rootEndpointGroup.dynamicListen(HMethod.GET, listener);
-
-	}
-
-	public putDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(HMethod.PUT, { handler: listener});
-		this.rootEndpointGroup.dynamicListen(HMethod.PUT, listener);
-
-	}
-
-	public postDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(HMethod.POST, { handler: listener});
-		this.rootEndpointGroup.dynamicListen(HMethod.POST, listener);
-
-	}
-
-	public deleteDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		if (typeof listener === "function") return this.rootEndpointGroup.dynamicListen(HMethod.DELETE, { handler: listener});
-		this.rootEndpointGroup.dynamicListen(HMethod.DELETE, listener);
-
-	}
-
-	public get(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		this.listen(endpoint, HMethod.GET, listener);
-
-	}
-
-	public post(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		this.listen(endpoint, HMethod.POST, listener);
-
-	}
-
-	public put(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		this.listen(endpoint, HMethod.PUT, listener);
-
-	}
-
-	public delete(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
-
-		this.listen(endpoint, HMethod.DELETE, listener);
-
-	}
-
-	public start(port: number = 3000, startHandler?: () => void): void {
-
-		this.server.listen(port, startHandler);
 
 	}
 

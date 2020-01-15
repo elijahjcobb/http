@@ -25,13 +25,14 @@ import {
 	HObject,
 	HRequest,
 	HResponse,
-	HServer,
 	HUploadManagerLocationType,
 	StandardType,
-	HErrorStatusCode
+	HErrorStatusCode,
+	HEndpointGroup,
+	HHTTPServer
 } from "./index";
 
-const server: HServer = new HServer();
+const endpoint: HEndpointGroup = new HEndpointGroup();
 
 class UserTest implements HObject {
 
@@ -45,7 +46,7 @@ class UserTest implements HObject {
 	}
 }
 
-server.post("/hello", {
+endpoint.post("/hello", {
 	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
 
 		const body: {foo: number} = req.getBody();
@@ -67,11 +68,11 @@ server.post("/hello", {
 	}
 });
 
-server.get("/file", async (req: HRequest, res: HResponse): Promise<void> => {
+endpoint.get("/file", async (req: HRequest, res: HResponse): Promise<void> => {
 
 	res.sendFile("/home/elijahcobb/Documents/hydro-test.txt", {
 		name: "hydro.txt",
-		type: HFileSendType.ATTACHMENT,
+		type: HFileSendType.DOWNLOAD,
 		mime: {
 			type: "application",
 			subtype: "txt"
@@ -80,20 +81,26 @@ server.get("/file", async (req: HRequest, res: HResponse): Promise<void> => {
 
 });
 
-server.get("/google", async (req: HRequest, res: HResponse): Promise<void> => {
+endpoint.get("/ping", async (req: HRequest, res: HResponse): Promise<void> => {
+
+	res.sendString("pong");
+
+});
+
+endpoint.get("/google", async (req: HRequest, res: HResponse): Promise<void> => {
 	res.redirect("https://google.com");
 });
 
-server.getDynamic(async (req: HRequest, res: HResponse): Promise<void> => {
+endpoint.getDynamic(async (req: HRequest, res: HResponse): Promise<void> => {
 
 	res.send({msg: "GET " + req.getEndpoint()});
 
 });
 
-server.postDynamic(async (req: HRequest, res: HResponse): Promise<void> => {
+endpoint.postDynamic(async (req: HRequest, res: HResponse): Promise<void> => {
 
 	res.send({msg: "POST " + req.getEndpoint()});
 
 });
 
-server.start();
+new HHTTPServer(endpoint).start(3000);

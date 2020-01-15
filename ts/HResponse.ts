@@ -64,8 +64,6 @@ export class HResponse {
 
 		}
 
-		console.log(this.headers.toObject());
-
 		const headers: HTTP.OutgoingHttpHeaders = this.headers.toObject() as HTTP.OutgoingHttpHeaders;
 		this.res.writeHead(this.statusCode, headers);
 
@@ -195,6 +193,12 @@ export class HResponse {
 			throw HError.init().msg("Unable to parse json obj into buffer.");
 
 		}
+
+	}
+
+	public sendString(value: string): void {
+
+		this.sendBuffer(Buffer.from(value, "utf8"));
 
 	}
 

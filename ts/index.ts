@@ -34,4 +34,6 @@ export {HServer} from "./HServer";
 export {HObject} from "./HObject";
 export {HErrorStatusCode} from "./HErrorStatusCode";
 export {HUploadManager, HUploadManagerLocationType, HUploadManagerConstructorType} from "./HUploadManager";
+export {HHTTPSServer} from "./HHTTPSServer";
+export {HHTTPServer} from "./HHTTPServer";
 export * from "typit";
