@@ -100,8 +100,6 @@ y.get("a", async(req: HRequest, res: HResponse): Promise<void> => res.sendString
 y.get("b", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("y-b"));
 y.get("c", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("y-c"));
 
-z.get("a", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("z-a"));
-z.get("b", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("z-b"));
-z.get("c", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("z-c"));
+z.get("/", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("z/"));
 
 new HHTTPServer(rootEndpoint).start(3000, () => console.log("Server LIVE!"));

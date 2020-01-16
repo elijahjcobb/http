@@ -45,8 +45,7 @@ export class HEndpointGroup {
 
 	private findHandlerForEndpoint(endpoints: Stack<string>, method: HMethod): HEndpoint | undefined {
 
-		const current: string | undefined = endpoints.pop();
-		if (current == undefined) return undefined;
+		const current: string = endpoints.pop() || "";
 
 		let entryForKey: HEndpointGroup | HEndpoint | undefined = this.endpoints.get(method)?.get(current);
 		if (entryForKey === undefined && endpoints.peek() !== undefined) entryForKey = this.endpoints.get(method)?.get(HEndpointGroup.WILDCARD_KEY_GROUP);
