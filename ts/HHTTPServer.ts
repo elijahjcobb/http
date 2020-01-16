@@ -20,7 +20,7 @@ export class HHTTPServer extends HServer {
 
 		super(endpointGroup);
 
-		this.server = HTTP.createServer(super.rootHandler);
+		this.server = HTTP.createServer(this.rootHandler);
 
 	}
 

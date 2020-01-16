@@ -20,12 +20,12 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import { Dictionary } from "@ejc-tsds/dictionary";
-import { Stack } from "@ejc-tsds/stack";
+import {Dictionary} from "@ejc-tsds/dictionary";
+import {Stack} from "@ejc-tsds/stack";
 import {HEndpoint, HEndpointConstructorType, HEndpointHandler} from "./HEndpoint";
-import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HMethod, HMethodHelper } from "./HMethod";
+import {HRequest} from "./HRequest";
+import {HResponse} from "./HResponse";
+import {HMethod} from "./HMethod";
 
 export class HEndpointGroup {
 
@@ -96,7 +96,7 @@ export class HEndpointGroup {
 
 	}
 
-	public dynamicListen(method: HMethod, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public dynamicListen(method: HMethod, listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		if (typeof listener === "function") return this.dynamicListen(method, { handler: listener});
 
@@ -116,55 +116,64 @@ export class HEndpointGroup {
 
 	}
 
-	public getDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public getDynamic(listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		if (typeof listener === "function") return this.dynamicListen(HMethod.GET, { handler: listener});
 		this.dynamicListen(HMethod.GET, listener);
 
 	}
 
-	public putDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public putDynamic(listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		if (typeof listener === "function") return this.dynamicListen(HMethod.PUT, { handler: listener});
 		this.dynamicListen(HMethod.PUT, listener);
 
 	}
 
-	public postDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public postDynamic(listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		if (typeof listener === "function") return this.dynamicListen(HMethod.POST, { handler: listener});
 		this.dynamicListen(HMethod.POST, listener);
 
 	}
 
-	public deleteDynamic(listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public deleteDynamic(listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		if (typeof listener === "function") return this.dynamicListen(HMethod.DELETE, { handler: listener});
 		this.dynamicListen(HMethod.DELETE, listener);
 
 	}
 
-	public get(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public get(endpoint: string, listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		this.listen(endpoint, HMethod.GET, listener);
 
 	}
 
-	public post(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public post(endpoint: string, listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		this.listen(endpoint, HMethod.POST, listener);
 
 	}
 
-	public put(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public put(endpoint: string, listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		this.listen(endpoint, HMethod.PUT, listener);
 
 	}
 
-	public delete(endpoint: string, listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler): void {
+	public delete(endpoint: string, listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		this.listen(endpoint, HMethod.DELETE, listener);
+
+	}
+
+	public attach(endpoint: string, endpointGroup: HEndpointGroup): void {
+
+		this.listen(endpoint, HMethod.GET, endpointGroup);
+		this.listen(endpoint, HMethod.POST, endpointGroup);
+		this.listen(endpoint, HMethod.PUT, endpointGroup);
+		this.listen(endpoint, HMethod.DELETE, endpointGroup);
 
 	}
 

@@ -20,87 +20,88 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import {
-	HFileSendType,
-	HObject,
-	HRequest,
-	HResponse,
-	HUploadManagerLocationType,
-	StandardType,
-	HErrorStatusCode,
-	HEndpointGroup,
-	HHTTPServer
-} from "./index";
+import {HEndpointGroup, HErrorStatusCode, HHTTPServer, HRequest, HResponse} from "./index";
 
-const endpoint: HEndpointGroup = new HEndpointGroup();
+const rootEndpoint: HEndpointGroup = new HEndpointGroup();
 
-class UserTest implements HObject {
-
-	public name: string | undefined;
-	public password: string | undefined;
-
-	public bond(): object {
-		return {
-			name: this.name
-		};
-	}
-}
-
-endpoint.post("/hello", {
-	handler: (async (req: HRequest, res: HResponse): Promise<void> => {
-
-		const body: {foo: number} = req.getBody();
-
-		const user: UserTest = new UserTest();
-		user.name = "John";
-		user.password = "p";
-
-		if (body.foo > 18) res.sendHObject(user);
-		else return res.error({code: HErrorStatusCode.ImATeapot, show: true});
-
-	}),
-	types: {
-		foo: StandardType.NUMBER
-	},
-	upload: {
-		location: HUploadManagerLocationType.Payload,
-		sizeLimit: 16
-	}
+rootEndpoint.get("a", async(req: HRequest, res: HResponse) => {
+	res.send(req.getHeaders());
 });
 
-endpoint.get("/file", async (req: HRequest, res: HResponse): Promise<void> => {
+rootEndpoint.get("b", async(req: HRequest, res: HResponse) => {
+	res.err(HErrorStatusCode.ImATeapot, "I am a teapot!");
+});
 
-	res.sendFile("/home/elijahcobb/Documents/hydro-test.txt", {
-		name: "hydro.txt",
-		type: HFileSendType.DOWNLOAD,
-		mime: {
-			type: "application",
-			subtype: "txt"
-		}
-	});
+rootEndpoint.get("c", async(req: HRequest, res: HResponse) => {
+	res.redirect("y/a");
+});
+
+rootEndpoint.get("d", async(req: HRequest, res: HResponse) => {
+	res.write(Buffer.from("a"));
+	setTimeout(() => {
+
+		res.write(Buffer.from("b"));
+
+		setTimeout(() => {
+
+			res.write(Buffer.from("c"));
+
+			setTimeout(() => {
+
+				res.write(Buffer.from("d"));
+
+				setTimeout(() => {
+
+					res.write(Buffer.from("e"));
+
+					setTimeout(() => {
+
+						res.write(Buffer.from("f"));
+						res.writeEnd();
+
+
+					}, 500);
+
+				}, 500);
+
+			}, 500);
+
+		}, 500);
+
+	}, 500);
 
 });
 
-endpoint.get("/ping", async (req: HRequest, res: HResponse): Promise<void> => {
+rootEndpoint.get("e", async(req: HRequest, res: HResponse) => {
+	res.sendFile("/home/elijahcobb/Pictures/profile.jpeg");
+});
 
-	res.sendString("pong");
+import * as FS from "fs";
+
+rootEndpoint.get("f", async(req: HRequest, res: HResponse) => {
+
+	res.sendStream(FS.createReadStream("/home/elijahcobb/Pictures/profile.jpeg"));
 
 });
 
-endpoint.get("/google", async (req: HRequest, res: HResponse): Promise<void> => {
-	res.redirect("https://google.com");
-});
+const x: HEndpointGroup = new HEndpointGroup();
+const y: HEndpointGroup = new HEndpointGroup();
+const z: HEndpointGroup = new HEndpointGroup();
 
-endpoint.getDynamic(async (req: HRequest, res: HResponse): Promise<void> => {
+rootEndpoint.attach("x", x);
+rootEndpoint.attach("y", y);
+rootEndpoint.attach("z", z);
 
-	res.send({msg: "GET " + req.getEndpoint()});
+x.post("a", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("x-a"));
+x.post("b", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("x-b"));
+x.post("c", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("x-c"));
 
-});
+y.get("a", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("y-a"));
+y.get("b", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("y-b"));
+y.get("c", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("y-c"));
 
-endpoint.postDynamic(async (req: HRequest, res: HResponse): Promise<void> => {
+z.get("a", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("z-a"));
+z.get("b", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("z-b"));
+z.get("c", async(req: HRequest, res: HResponse): Promise<void> => res.sendString("z-c"));
 
-	res.send({msg: "POST " + req.getEndpoint()});
-
-});
-
-new HHTTPServer(endpoint).start(3000);
+new HHTTPServer(rootEndpoint).start(3000, () => console.log("Server LIVE!"));

@@ -36,8 +36,8 @@ export abstract class HServer {
 
 	protected constructor(endpointGroup: HEndpointGroup) {
 
-		this.rootEndpointGroup = endpointGroup;
 		this.rootHandler = this.rootHandler.bind(this);
+		this.rootEndpointGroup = endpointGroup;
 
 	}
 

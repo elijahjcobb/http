@@ -49,7 +49,7 @@ export class HResponse {
 
 	private setHeaders(options?: HFileSendOptions): void {
 
-		this.setHeader("X-Powered-By", "@elijahjcobb/hydrogen on NPM");
+		this.setHeader("X-Powered-By", "@elijahjcobb/hydrogen on GitHub");
 
 		if (options) {
 

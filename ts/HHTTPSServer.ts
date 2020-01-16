@@ -19,7 +19,7 @@ export class HHTTPSServer extends HServer {
 
 		super(endpointGroup);
 
-		this.server = HTTPS.createServer({key, cert}, super.rootHandler);
+		this.server = HTTPS.createServer({key, cert}, this.rootHandler);
 
 	}
 
