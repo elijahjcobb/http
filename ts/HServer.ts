@@ -26,7 +26,7 @@ import {HEndpoint, HEndpointHandler} from "./HEndpoint";
 import {HEndpointGroup} from "./HEndpointGroup";
 import {HResponse} from "./HResponse";
 import {HError} from "./HError";
-import {HUploadManager, HUploadManagerLocationType} from "./HUploadManager";
+import {HUploadManager, HUploadManagerLocation} from "./HUploadManager";
 import {ObjectTypeDefinition} from "typit";
 import {HErrorStatusCode} from "./HErrorStatusCode";
 
@@ -46,7 +46,7 @@ export abstract class HServer {
 		const request: HRequest = new HRequest(req);
 		const response: HResponse = new HResponse(request, res);
 
-		(async(): Promise<void> => {
+		(async (): Promise<void> => {
 
 			const endpoint: HEndpoint | undefined = this.rootEndpointGroup.getHandler(request.getUrl(), request.getMethod());
 
@@ -57,7 +57,7 @@ export abstract class HServer {
 				if (uploadManager === undefined) {
 					uploadManager = new HUploadManager({
 						sizeLimit: 5_000_000,
-						location: HUploadManagerLocationType.Payload
+						location: HUploadManagerLocation.PAYLOAD
 					});
 				}
 
@@ -71,9 +71,10 @@ export abstract class HServer {
 
 				await handler(request, response);
 
-			} else return response.error({code: HErrorStatusCode.NotFound, msg: "Path does not exist.", show: true });
+			} else return response.error({code: HErrorStatusCode.NotFound, msg: "Path does not exist.", show: true});
 
-		})().then(() => {}).catch((err: any) => {
+		})().then(() => {
+		}).catch((err: any) => {
 
 			if (err instanceof HError) {
 
@@ -91,4 +92,7 @@ export abstract class HServer {
 
 	}
 
+	public abstract start(port: number, listener?: () => void): void;
+
 }
+

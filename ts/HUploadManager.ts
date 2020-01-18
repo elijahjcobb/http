@@ -27,13 +27,13 @@ import { HError } from "./HError";
 import * as FS from "fs";
 import * as Crypto from "crypto";
 
-export enum HUploadManagerLocationType {
-	Payload,
-	Stream
+export enum HUploadManagerLocation {
+	PAYLOAD,
+	STREAM
 }
 
 export type HUploadManagerConstructorType = {
-	location: HUploadManagerLocationType;
+	location: HUploadManagerLocation;
 	extensions?: string[];
 	sizeLimit?: number;
 };
@@ -42,7 +42,7 @@ export class HUploadManager {
 
 	private readonly allowedExtensions?: string[];
 	private readonly sizeLimit?: number;
-	private readonly location: HUploadManagerLocationType;
+	private readonly location: HUploadManagerLocation;
 
 	public constructor(obj: HUploadManagerConstructorType) {
 
@@ -74,7 +74,7 @@ export class HUploadManager {
 
 	public getAllowedExtensions(): string[] | undefined { return this.allowedExtensions; }
 	public getSizeLimit(): number | undefined { return this.sizeLimit; }
-	public getLocation(): HUploadManagerLocationType { return this.location; }
+	public getLocation(): HUploadManagerLocation { return this.location; }
 
 	public async handleRequest(req: HRequest): Promise<void> {
 
@@ -103,7 +103,7 @@ export class HUploadManager {
 
 			}
 
-			if (this.location === HUploadManagerLocationType.Payload) {
+			if (this.location === HUploadManagerLocation.PAYLOAD) {
 
 				let payload: Buffer = Buffer.alloc(0, 0);
 				request.on("data", (chunk: Buffer) => {
@@ -122,7 +122,7 @@ export class HUploadManager {
 
 				});
 
-			} else if (this.location === HUploadManagerLocationType.Stream) {
+			} else if (this.location === HUploadManagerLocation.STREAM) {
 
 
 				const filePath: string = this.getNewFilePath();

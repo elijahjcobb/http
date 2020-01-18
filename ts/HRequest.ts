@@ -21,6 +21,7 @@
  */
 
 import * as HTTP from "http";
+import * as FS from "fs";
 import { HMethod, HMethodHelper } from "./HMethod";
 import { HError } from "./HError";
 import { ObjectTypeDefinition, ObjectType } from "typit";
@@ -51,6 +52,24 @@ export class HRequest {
 	public getPayload(): Buffer | undefined { return this.payload; }
 	public getPayloadStreamPath(): string | undefined { return this.payloadSteamPath; }
 	public setPayloadStreamPath(value: string): void { this.payloadSteamPath = value; }
+
+	public getPayloadStream(): FS.ReadStream | undefined  {
+
+		if (this.payloadSteamPath === undefined) return undefined;
+		if (!FS.existsSync(this.payloadSteamPath)) return undefined;
+
+		return FS.createReadStream(this.payloadSteamPath);
+
+	}
+
+	public getPayloadStreamData(): Buffer | undefined  {
+
+		if (this.payloadSteamPath === undefined) return undefined;
+		if (!FS.existsSync(this.payloadSteamPath)) return undefined;
+
+		return FS.readFileSync(this.payloadSteamPath);
+
+	}
 
 	public getEndpoint(): string {
 
