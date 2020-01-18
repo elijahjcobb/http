@@ -20,4 +20,28 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import {} from "./index";
+import {HEndpointGroup, HHTTPServer, HRequest, HResponse, StandardType} from "./index";
+
+const rootEndpoint: HEndpointGroup = new HEndpointGroup();
+const userEndpoint: HEndpointGroup = new HEndpointGroup();
+
+userEndpoint.post("/sign-up", {
+	handler: async(req: HRequest, res: HResponse): Promise<void> => {
+
+		const body: {name: string, age: number} = req.getBody();
+		res.send({id: "xxx", name: body.name});
+
+	},
+	types: {
+		name: StandardType.STRING,
+		age: StandardType.NUMBER
+	}
+});
+
+rootEndpoint.get("/hello", async(req: HRequest, res: HResponse) => {
+	res.sendFile("/path-to-file");
+});
+
+rootEndpoint.attach("/user", userEndpoint);
+
+new HHTTPServer(rootEndpoint).start(3000);

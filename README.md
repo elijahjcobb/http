@@ -3,7 +3,7 @@ Welcome to the hydrogen wiki! This is a work in progress and will be constantly 
 
 ## Pages
 * [Home](https://github.com/elijahjcobb/hydrogen/wiki/Home)
-* [Example](https://github.com/elijahjcobb/hydrogen/wiki/Example)
+* [Examples](https://github.com/elijahjcobb/hydrogen/wiki/Example)
 * [Creating an Endpoint](https://github.com/elijahjcobb/hydrogen/wiki/Endpoint)
 * [Understanding Requests](https://github.com/elijahjcobb/hydrogen/wiki/Requests)
 * [Understanding Responses](https://github.com/elijahjcobb/hydrogen/wiki/Responses)
@@ -15,6 +15,35 @@ Welcome to the hydrogen wiki! This is a work in progress and will be constantly 
 * [Error Handling](https://github.com/elijahjcobb/hydrogen/wiki/Error)
 * [Dynamic Endpoints](https://github.com/elijahjcobb/hydrogen/wiki/Dynamic)
 * [Post Process Handler](https://github.com/elijahjcobb/hydrogen/wiki/PostProcessHandler)
+
+## Example
+```typescript
+import {HEndpointGroup, HHTTPServer, HRequest, HResponse, StandardType} from "@elijahjcobb/hydrogen";
+
+const rootEndpoint: HEndpointGroup = new HEndpointGroup();
+const userEndpoint: HEndpointGroup = new HEndpointGroup();
+
+userEndpoint.post("/sign-up", {
+    handler: async(req: HRequest, res: HResponse): Promise<void> => {
+
+	const body: {name: string, age: number} = req.getBody();
+	res.send({id: "xxx", name: body.name});
+
+    },
+    types: {
+	name: StandardType.STRING,
+	age: StandardType.NUMBER
+    }
+});
+
+rootEndpoint.get("/hello", async(req: HRequest, res: HResponse) => {
+    res.sendFile("/path-to-file");
+});
+
+rootEndpoint.attach("/user", userEndpoint);
+
+new HHTTPServer(rootEndpoint).start(3000);
+```
 
 ## Features
 
