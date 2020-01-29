@@ -1,5 +1,3 @@
-![hydrogen](icon.png)
-
 Welcome to the hydrogen wiki! This is a work in progress and will be constantly updated. Below you will find pages to this wiki but also feel free to view some nice features and information about the package.
 
 ## Pages

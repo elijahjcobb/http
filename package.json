@@ -1,9 +1,13 @@
 {
-  "name": "@elijahjcobb/hydrogen",
-  "version": "0.2.0",
+  "name": "@element-ts/hydrogen",
+  "version": "0.1.0",
   "description": "Hydrogen is a custom HTTP server builder that is easy to use and has powerful functionality.",
   "main": "js/index",
   "types": "dts/index",
+  "files": [
+    "js",
+    "dts"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run compile",
@@ -42,9 +46,5 @@
     "@types/node": "latest",
     "typescript": "latest",
     "tslint": "latest"
-  },
-  "files": [
-    "js",
-    "dts"
-  ]
+  }
 }
