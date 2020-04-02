@@ -8,7 +8,7 @@
  *
  */
 
-import {HServer} from "./HServer";
+import {HServer, HServerConfig} from "./HServer";
 import * as HTTP from "http";
 import {HEndpointGroup} from "./HEndpointGroup";
 
@@ -16,9 +16,9 @@ export class HHTTPServer extends HServer {
 
 	private server: HTTP.Server;
 
-	public constructor(endpointGroup: HEndpointGroup) {
+	public constructor(endpointGroup: HEndpointGroup, config?: HServerConfig) {
 
-		super(endpointGroup);
+		super(endpointGroup, config);
 
 		this.server = HTTP.createServer(this.rootHandler);
 
