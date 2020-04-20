@@ -1,23 +1,23 @@
 Welcome to the hydrogen wiki! This is a work in progress and will be constantly updated. Below you will find pages to this wiki but also feel free to view some nice features and information about the package.
 
 ## Pages
-* [Home](https://github.com/elijahjcobb/hydrogen/wiki/Home)
-* [Examples](https://github.com/elijahjcobb/hydrogen/wiki/Example)
-* [Creating an Endpoint](https://github.com/elijahjcobb/hydrogen/wiki/Endpoint)
-* [Understanding Requests](https://github.com/elijahjcobb/hydrogen/wiki/Requests)
-* [Understanding Responses](https://github.com/elijahjcobb/hydrogen/wiki/Responses)
-* [Dealing with Files](https://github.com/elijahjcobb/hydrogen/wiki/Files)
-* [Enforcing Types](https://github.com/elijahjcobb/hydrogen/wiki/Types)
-* [Endpoint Groups](https://github.com/elijahjcobb/hydrogen/wiki/Groups)
-* [Creating a Server](https://github.com/elijahjcobb/hydrogen/wiki/Server)
-* [Using `HObject`](https://github.com/elijahjcobb/hydrogen/wiki/HObject)
-* [Error Handling](https://github.com/elijahjcobb/hydrogen/wiki/Error)
-* [Dynamic Endpoints](https://github.com/elijahjcobb/hydrogen/wiki/Dynamic)
-* [Post Process Handler](https://github.com/elijahjcobb/hydrogen/wiki/PostProcessHandler)
+* [Home](https://github.com/element-ts/hydrogen/wiki/Home)
+* [Examples](https://github.com/element-ts/hydrogen/wiki/Example)
+* [Creating an Endpoint](https://github.com/element-ts/hydrogen/wiki/Endpoint)
+* [Understanding Requests](https://github.com/element-ts/hydrogen/wiki/Requests)
+* [Understanding Responses](https://github.com/element-ts/hydrogen/wiki/Responses)
+* [Dealing with Files](https://github.com/element-ts/hydrogen/wiki/Files)
+* [Enforcing Types](https://github.com/element-ts/hydrogen/wiki/Types)
+* [Endpoint Groups](https://github.com/element-ts/hydrogen/wiki/Groups)
+* [Creating a Server](https://github.com/element-ts/hydrogen/wiki/Server)
+* [Using `HObject`](https://github.com/element-ts/hydrogen/wiki/HObject)
+* [Error Handling](https://github.com/element-ts/hydrogen/wiki/Error)
+* [Dynamic Endpoints](https://github.com/element-ts/hydrogen/wiki/Dynamic)
+* [Post Process Handler](https://github.com/element-ts/hydrogen/wiki/PostProcessHandler)
 
 ## Example
 ```typescript
-import {HEndpointGroup, HHTTPServer, HRequest, HResponse, StandardType} from "@elijahjcobb/hydrogen";
+import {HEndpointGroup, HHTTPServer, HRequest, HResponse, StandardType} from "@element-ts/hydrogen";
 
 const rootEndpoint: HEndpointGroup = new HEndpointGroup();
 const userEndpoint: HEndpointGroup = new HEndpointGroup();
@@ -62,7 +62,7 @@ You can send files or streams to your client but you can also receive file uploa
 You can handle everything down on the binary level if you like by using the `write(b: Buffer)` and `writeEnd()` methods on `HResponse` but you also have helper methods like `res.send(o: object)`, `res.sendFile(path: string)`, `res.sendString(s: string)` and many many more. They are just sugar on top as everything ends up calling `write()` and `writeEnd()`
 
 ### Modular
-I use this package with another package of mine called [@elijahjcobb/maria](https://www.npmjs.com/package/@elijahjcobb/maria) which is a package for communicating with [MariaDB](https://mariadb.com/) databases. It is very easy to use and I built it to *sort of* replicate what [Parse](https://parseplatform.org/) used to be. In hydrogen I provide an interface called `HObject` that requires just one method with the signature `bond(): object`. On `HResponse` you can use `sendHObject(obj: HObject)` and it will take the object you provide and then use the object returned by `bond()` and send it using `res.send()`. This is helpful if you have properties that you may not want to send to the client all the time yet still provide a super fast way to send an object to your client.
+I use this package with another package of mine called [@element-ts/silicon](https://www.npmjs.com/package/@element-ts/silicon) which is a package for communicating with MongoDB databases. It is very easy to use and I built it to *sort of* replicate what [Parse](https://parseplatform.org/) used to be. In hydrogen I provide an interface called `HObject` that requires just one method with the signature `bond(): object`. On `HResponse` you can use `sendHObject(obj: HObject)` and it will take the object you provide and then use the object returned by `bond()` and send it using `res.send()`. This is helpful if you have properties that you may not want to send to the client all the time yet still provide a super fast way to send an object to your client.
 
 ### Protocols
 Everything revolves around `HEndpointGroup` objects. Once you have created an endpoint group you can either instantiate a `HHTTPServer` or `HHTTPSServer` (*forgive me on the names lol*). When you create a new server you must pass in an endpoint group to be used as the root endpoint group of your server. If you want an HTTPS server, simply use an `HHTTPSServer`, you will also have to pass in a key and certificate with the signature: `new HHTTPSServer(endpointGroup: HEndpointGroup, key: Buffer, cert: Buffer)` and *voila* you have HTTPS instead of :shit:y ol' HTTP.
