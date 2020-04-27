@@ -24,7 +24,7 @@ import * as HTTP from "http";
 import * as FS from "fs";
 import { HMethod, HMethodHelper } from "./HMethod";
 import { HError } from "./HError";
-import { ObjectTypeDefinition, ObjectType } from "typit";
+import {OObjectType, OObjectTypeDefinition, OType} from "@element-ts/oxygen";
 
 export class HRequest {
 
@@ -96,11 +96,11 @@ export class HRequest {
 
 	}
 
-	public verifyPayloadAgainstTypeDefinition(types: ObjectTypeDefinition): void {
+	public verifyPayloadAgainstTypeDefinition(types: OObjectTypeDefinition): void {
 
 		if (this.payloadObject === undefined) throw HError.init().code(400).msg("Payload undefined.").show();
-		const typeValidator: ObjectType = new ObjectType(types);
-		if (!typeValidator.checkConformity(this.payloadObject)) throw HError.init().code(400).msg("Payload is not valid type.").show();
+		const typeValidator: OType = OObjectType.follow(types);
+		if (!typeValidator.conforms(this.payloadObject)) throw HError.init().code(400).msg("Payload is not valid type.").show();
 
 	}
 

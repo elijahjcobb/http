@@ -36,4 +36,3 @@ export {HErrorStatusCode} from "./HErrorStatusCode";
 export {HUploadManager, HUploadManagerLocation, HUploadManagerConstructorType} from "./HUploadManager";
 export {HHTTPSServer} from "./HHTTPSServer";
 export {HHTTPServer} from "./HHTTPServer";
-export * from "typit";

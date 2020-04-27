@@ -21,6 +21,7 @@
  */
 
 import {HEndpointGroup, HHTTPServer, HRequest, HResponse} from "./index";
+import {OStandardType} from "@element-ts/oxygen";
 
 const endpointGroup: HEndpointGroup = new HEndpointGroup();
 
@@ -28,5 +29,15 @@ endpointGroup.get("/hi", async(request: HRequest, response: HResponse) => {
 	response.sendString("hi");
 });
 
-const server: HHTTPServer = new HHTTPServer(endpointGroup);
+endpointGroup.post("/signin", {
+	handler: async (req: HRequest, res: HResponse): Promise<void> => {
+		const body: {name: string} = req.getBody();
+		res.sendString(body.name);
+	},
+	types: {
+		name: OStandardType.string
+	}
+});
+
+const server: HHTTPServer = new HHTTPServer(endpointGroup, {debug: true});
 server.start(3000);

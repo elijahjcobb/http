@@ -1,6 +1,6 @@
 {
   "name": "@element-ts/hydrogen",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Hydrogen is a custom HTTP server builder that is easy to use and has powerful functionality.",
   "main": "js/index",
   "types": "dts/index",
@@ -40,7 +40,8 @@
     "@ejc-tsds/dictionary": "latest",
     "@ejc-tsds/stack": "latest",
     "@elijahjcobb/prom-type": "latest",
-    "typit": "latest"
+    "@element-ts/neon": "latest",
+    "@element-ts/oxygen": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",

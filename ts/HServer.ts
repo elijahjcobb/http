@@ -27,10 +27,10 @@ import {HEndpointGroup} from "./HEndpointGroup";
 import {HResponse} from "./HResponse";
 import {HError} from "./HError";
 import {HUploadManager, HUploadManagerLocation} from "./HUploadManager";
-import {ObjectTypeDefinition} from "typit";
 import {HErrorStatusCode} from "./HErrorStatusCode";
-import {HLogger} from "./HLogger";
+import {Neon} from "@element-ts/neon";
 import {HMethod} from "./HMethod";
+import {OObjectTypeDefinition} from "@element-ts/oxygen";
 
 export interface HServerConfig {
 	debug?: boolean;
@@ -47,64 +47,73 @@ export abstract class HServer {
 		this.config = config;
 		this.rootEndpointGroup = endpointGroup;
 
-		HLogger.setOn(config?.debug);
+		if (config?.debug === true) {
+			Neon.enable();
+			Neon.setTitle("@element-ts/hydrogen");
+		}
 
 	}
 
 	protected rootHandler(req: HTTP.IncomingMessage, res: HTTP.ServerResponse): void {
 
 		const request: HRequest = new HRequest(req);
-		HLogger.log("Created HRequest instance for new request.");
-		HLogger.logIncomingRequest(request);
+		Neon.log("Created HRequest instance for new request.");
+		Neon.log({
+			headers: request.getHeaders(),
+			url: request.getUrl(),
+			endpoint: request.getEndpoint(),
+			method: request.getMethod(),
+			payload: request.getPayload()
+		});
 		const response: HResponse = new HResponse(request, res);
-		HLogger.log("Created HResponse instance for new request.");
+		Neon.log("Created HResponse instance for new request.");
 
 		(async (): Promise<void> => {
 
 			const url: string = request.getUrl();
 			const method: HMethod = request.getMethod();
 
-			HLogger.log(`Looking for endpoint for ${HMethod[method]} ${url}.`);
+			Neon.log(`Looking for endpoint for ${HMethod[method]} ${url}.`);
 
 			const endpoint: HEndpoint | undefined = this.rootEndpointGroup.getHandler(url, method);
 
 			if (endpoint) {
 
-				HLogger.log("Found endpoint.");
+				Neon.log("Found endpoint.");
 
 				let uploadManager: HUploadManager | undefined = endpoint.getUploadManager();
 
 				if (uploadManager === undefined) {
-					HLogger.log(`Setting default upload manager options.`);
+					Neon.log(`Setting default upload manager options.`);
 					uploadManager = new HUploadManager({
 						sizeLimit: 5_000_000,
 						location: HUploadManagerLocation.PAYLOAD
 					});
 				} else {
-					HLogger.log(`Found an HUploadManager instance for this endpoint.`);
+					Neon.log(`Found an HUploadManager instance for this endpoint.`);
 				}
 
-				HLogger.log(`Passing control to HUploadManager instance.`);
+				Neon.log(`Passing control to HUploadManager instance.`);
 				await uploadManager.handleRequest(request);
-				HLogger.log(`Received control from HUploadManager instance.`);
+				Neon.log(`Received control from HUploadManager instance.`);
 
-				HLogger.log(`Fetching HEndpointHandler.`);
+				Neon.log(`Fetching HEndpointHandler.`);
 				const handler: HEndpointHandler = endpoint.getHandler();
 
-				const types: ObjectTypeDefinition | undefined = endpoint.getRequiredType();
+				const types: OObjectTypeDefinition | undefined = endpoint.getRequiredType();
 				request.fetchPayload();
 				if (types !== undefined) {
-					HLogger.log(`Passing control for type testing to HRequest instance.`);
+					Neon.log(`Passing control for type testing to HRequest instance.`);
 					request.verifyPayloadAgainstTypeDefinition(types);
-					HLogger.log(`Received control from HRequest instance.`);
+					Neon.log(`Received control from HRequest instance.`);
 				}
 
-				HLogger.log(`Passing control to HEndpointHandler.`);
+				Neon.log(`Passing control to HEndpointHandler.`);
 				await handler(request, response);
-				HLogger.log(`Received control from HEndpointHandler.`);
+				Neon.log(`Received control from HEndpointHandler.`);
 
 			} else {
-				HLogger.log("No endpoint could be found.");
+				Neon.log("No endpoint could be found.");
 				return response.error({code: HErrorStatusCode.NotFound, msg: "Path does not exist.", show: true});
 			}
 
@@ -113,12 +122,12 @@ export abstract class HServer {
 
 			if (err instanceof HError) {
 
-				HLogger.err(`${err.getStatusCode()} - ${err.getInternalStatusMessage()}`);
+				Neon.err(`${err.getStatusCode()} - ${err.getInternalStatusMessage()}`);
 				return response.sendError(err);
 
 			} else {
 
-				HLogger.err(err);
+				Neon.err(err);
 				return response.error({code: HErrorStatusCode.InternalServerError, msg: "Internal Server Error."});
 
 			}

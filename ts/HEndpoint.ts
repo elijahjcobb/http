@@ -23,12 +23,12 @@
 import { HUploadManager, HUploadManagerConstructorType } from "./HUploadManager";
 import { HMethod } from "./HMethod";
 import { HResponse } from "./HResponse";
-import { ObjectTypeDefinition } from "typit";
 import { HRequest } from "./HRequest";
+import {OObjectTypeDefinition} from "@element-ts/oxygen";
 
 export type HEndpointConstructorType = {
 	handler: HEndpointHandler;
-	types?: ObjectTypeDefinition;
+	types?: OObjectTypeDefinition;
 	upload?: HUploadManagerConstructorType;
 };
 
@@ -39,7 +39,7 @@ export class HEndpoint {
 	private readonly endpoint: string;
 	private readonly method: HMethod;
 	private readonly handler: HEndpointHandler;
-	private readonly requiredType: ObjectTypeDefinition | undefined;
+	private readonly requiredType: OObjectTypeDefinition | undefined;
 	private readonly uploadManager: HUploadManager | undefined;
 
 	public constructor(endpoint: string, method: HMethod, obj: HEndpointConstructorType) {
@@ -55,7 +55,7 @@ export class HEndpoint {
 	public getEndpoint(): string { return this.endpoint; }
 	public getMethod(): HMethod { return this.method; }
 	public getHandler(): HEndpointHandler { return this.handler; }
-	public getRequiredType(): ObjectTypeDefinition | undefined { return this.requiredType; }
+	public getRequiredType(): OObjectTypeDefinition | undefined { return this.requiredType; }
 	public getUploadManager(): HUploadManager | undefined { return this.uploadManager; }
 
 }
