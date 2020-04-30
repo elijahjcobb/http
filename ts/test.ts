@@ -20,8 +20,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import {HEndpointGroup, HHTTPServer, HRequest, HResponse} from "./index";
+import {HEndpointGroup, HHTTPServer, HRequest, HResponse, HUploadManagerLocation} from "./index";
 import {OStandardType} from "@element-ts/oxygen";
+import {HEndpointBuilder} from "./HEndpointBuilder";
+import {HUploadManagerBuilder} from "./HUploadManagerBuilder";
 
 const endpointGroup: HEndpointGroup = new HEndpointGroup();
 
@@ -38,6 +40,22 @@ endpointGroup.post("/signin", {
 		name: OStandardType.string
 	}
 });
+
+endpointGroup.add(HEndpointBuilder
+	.post("hello")
+	.listener(async(req: HRequest, res: HResponse): Promise<void> => {
+
+	})
+	.types({
+		hi: OStandardType.string
+	})
+	.upload(HUploadManagerBuilder
+		.payload()
+		.allow("jpeg")
+		.allow("jpg")
+		.limit(3000)
+	)
+);
 
 const server: HHTTPServer = new HHTTPServer(endpointGroup, {debug: true});
 server.start(3000);

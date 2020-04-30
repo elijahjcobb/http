@@ -17,7 +17,8 @@ Welcome to the hydrogen wiki! This is a work in progress and will be constantly 
 
 ## Example
 ```typescript
-import {HEndpointGroup, HHTTPServer, HRequest, HResponse, StandardType} from "@element-ts/hydrogen";
+import {HEndpointGroup, HHTTPServer, HRequest, HResponse} from "@element-ts/hydrogen";
+import {OStandardType} from "@element-ts/oxygen";
 
 const rootEndpoint: HEndpointGroup = new HEndpointGroup();
 const userEndpoint: HEndpointGroup = new HEndpointGroup();
@@ -30,10 +31,23 @@ userEndpoint.post("/sign-up", {
 
     },
     types: {
-	name: StandardType.STRING,
-	age: StandardType.NUMBER
+	name: OStandardType.STRING,
+	age: OStandardType.NUMBER
     }
 });
+
+// below is an equivalent way of adding an endpoint using the HEndpointBuilder
+userEndpoint.add(HEndpointBuilder
+    .post("hello")
+    .listener(async(req: HRequest, res: HResponse): Promise<void> => {
+        const body: {name: string, age: number} = req.getBody();
+        res.send({id: "xxx", name: body.name});
+    })
+    .types({
+        name: OStandardType.STRING,
+        age: OStandardType.NUMBER
+    })
+);
 
 rootEndpoint.get("/hello", async(req: HRequest, res: HResponse) => {
     res.sendFile("/path-to-file");

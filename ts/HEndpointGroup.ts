@@ -26,6 +26,7 @@ import {HEndpoint, HEndpointConstructorType, HEndpointHandler} from "./HEndpoint
 import {HRequest} from "./HRequest";
 import {HResponse} from "./HResponse";
 import {HMethod} from "./HMethod";
+import {HEndpointBuilder, HEndpointBuilderResult} from "./HEndpointBuilder";
 
 export class HEndpointGroup {
 
@@ -164,6 +165,13 @@ export class HEndpointGroup {
 	public delete(endpoint: string, listener: HEndpointConstructorType | HEndpointHandler): void {
 
 		this.listen(endpoint, HMethod.DELETE, listener);
+
+	}
+
+	public add(endpointBuilder: HEndpointBuilder): void {
+
+		const result: HEndpointBuilderResult = endpointBuilder.build();
+		this.listen(result.endpoint, result.method, result.constructor);
 
 	}
 
