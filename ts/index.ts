@@ -20,19 +20,20 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-export {HEndpointHandler, HEndpoint, HEndpointConstructorType} from "./HEndpoint";
-export {HEndpointGroup} from "./HEndpointGroup";
-export {HError} from "./HError";
-export {HFileSendOptions} from "./HFileSendOptions";
-export {HFileSendType} from "./HFileSendType";
-export {HFileSendTypeHelper} from "./HFileSendTypeHelper";
-export {HMethod, HMethodHelper} from "./HMethod";
-export {HMime} from "./HMime";
-export {HRequest} from "./HRequest";
-export {HResponse} from "./HResponse";
-export {HServer} from "./HServer";
-export {HObject} from "./HObject";
-export {HErrorStatusCode} from "./HErrorStatusCode";
-export {HUploadManager, HUploadManagerLocation, HUploadManagerConstructorType} from "./HUploadManager";
-export {HHTTPSServer} from "./HHTTPSServer";
-export {HHTTPServer} from "./HHTTPServer";
+export * from "./HEndpoint";
+export * from "./HEndpointGroup";
+export * from "./HError";
+export * from "./HFileSendOptions";
+export * from "./HFileSendType";
+export * from "./HFileSendTypeHelper";
+export * from "./HMethod";
+export * from "./HMime";
+export * from "./HRequest";
+export * from "./HResponse";
+export * from "./HServer";
+export * from "./HObject";
+export * from "./HErrorStatusCode";
+export * from "./HUploadManager";
+export * from "./HHTTPSServer";
+export * from "./HHTTPServer";
+export * from "./HEndpointBuilder";
