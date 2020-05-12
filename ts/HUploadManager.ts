@@ -106,7 +106,7 @@ export class HUploadManager {
 			if (this.location === HUploadManagerLocation.PAYLOAD) {
 
 				let payload: Buffer = Buffer.alloc(0, 0);
-				request.on("data", (chunk: Buffer) => {
+				request.on("data", (chunk: Buffer): void => {
 
 					payload = Buffer.concat([payload, chunk]);
 
@@ -114,7 +114,7 @@ export class HUploadManager {
 
 				});
 
-				request.on("end", () => {
+				request.on("end", (): void => {
 
 					req.setPayload(payload);
 
@@ -130,7 +130,7 @@ export class HUploadManager {
 
 				let length: number = 0;
 
-				request.on("data", (chunk: Buffer) => {
+				request.on("data", (chunk: Buffer): void => {
 
 					length += chunk.length;
 					writeStream.write(chunk);
@@ -141,7 +141,7 @@ export class HUploadManager {
 
 				});
 
-				request.on("end", () => {
+				request.on("end", (): void => {
 
 					req.setPayloadStreamPath(filePath);
 					writeStream.end();
