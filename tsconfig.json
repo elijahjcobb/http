@@ -8,12 +8,9 @@
     "outDir": "js",
     "declarationDir": "dts",
     "declaration": true,
-    "strict": true
+    "strict": true,
+    "types": ["node", "jest"]
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "ts"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["ts"]
 }

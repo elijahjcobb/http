@@ -1,57 +1,40 @@
-/**
- * Elijah Cobb
- * elijah@elijahcobb.com
- * elijahcobb.com
- * github.com/elijahjcobb
- */
-
-/*
-export type HUploadManagerConstructorType = {
-	location: HUploadManagerLocation;
-	extensions?: string[];
-	sizeLimit?: number;
-};
- */
-
-
-import {HUploadManagerConstructorType, HUploadManagerLocation} from "./HUploadManager";
+import {
+  HUploadManagerConstructorType,
+  HUploadManagerLocation,
+} from "./HUploadManager";
 
 export class HUploadManagerBuilder {
+  private readonly _location: HUploadManagerLocation;
+  private readonly _extensions: string[];
+  private _size: number | undefined;
 
-	private readonly _location: HUploadManagerLocation;
-	private readonly _extensions: string[];
-	private _size: number | undefined;
+  private constructor(location: HUploadManagerLocation) {
+    this._location = location;
+    this._extensions = [];
+  }
 
-	private constructor(location: HUploadManagerLocation) {
+  public build(): HUploadManagerConstructorType {
+    return {
+      location: this._location,
+      extensions: this._extensions,
+      sizeLimit: this._size,
+    };
+  }
 
-		this._location = location;
-		this._extensions = [];
+  public allow(...extensions: string[]): HUploadManagerBuilder {
+    this._extensions.push(...extensions);
+    return this;
+  }
 
-	}
+  public limit(size: number): HUploadManagerBuilder {
+    this._size = size;
+    return this;
+  }
 
-	public build(): HUploadManagerConstructorType {
-		return {
-			location: this._location,
-			extensions: this._extensions,
-			sizeLimit: this._size
-		};
-	}
-
-	public allow(...extensions: string[]): HUploadManagerBuilder {
-
-		this._extensions.push(...extensions);
-		return this;
-
-	}
-
-	public limit(size: number): HUploadManagerBuilder {
-
-		this._size = size;
-		return this;
-
-	}
-
-	public static payload(): HUploadManagerBuilder { return new HUploadManagerBuilder(HUploadManagerLocation.PAYLOAD); }
-	public static stream(): HUploadManagerBuilder { return new HUploadManagerBuilder(HUploadManagerLocation.STREAM); }
-
+  public static payload(): HUploadManagerBuilder {
+    return new HUploadManagerBuilder(HUploadManagerLocation.PAYLOAD);
+  }
+  public static stream(): HUploadManagerBuilder {
+    return new HUploadManagerBuilder(HUploadManagerLocation.STREAM);
+  }
 }
