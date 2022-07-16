@@ -1,17 +1,19 @@
-import * as HTTP from "http";
 import * as FS from "fs";
-import { HMethod, HMethodHelper } from "./HMethod";
-import { HError } from "./HError";
-import { OObjectType, OObjectTypeDefinition, OType } from "@element-ts/oxygen";
+import { OObjectType } from "@element-ts/oxygen";
+import { HMethodHelper } from "./method";
+import { HError } from "./error";
+import type * as HTTP from "http";
+import type { HMethod } from "./method";
+import type { OObjectTypeDefinition } from "@element-ts/oxygen";
 
-export class HRequest {
+export class HRequest<T = any> {
   private readonly req: HTTP.IncomingMessage;
   private readonly headers: HTTP.IncomingHttpHeaders;
   private readonly url: string;
   private readonly method: HMethod;
   private payload: Buffer | undefined;
   private payloadSteamPath: string | undefined;
-  private payloadObject: object | undefined;
+  private payloadObject: unknown;
 
   public constructor(req: HTTP.IncomingMessage) {
     this.headers = req.headers;
@@ -67,24 +69,23 @@ export class HRequest {
 
     try {
       const payloadString: string = this.payload.toString("utf8");
-      this.payloadObject = JSON.parse(payloadString);
+      this.payloadObject = JSON.parse(payloadString) as unknown;
     } catch (e) {
       throw HError.init().code(400).msg("Unable to decode payload.").show();
     }
   }
 
   public verifyPayloadAgainstTypeDefinition(
-    types: OObjectTypeDefinition
+    types: OObjectTypeDefinition<T>
   ): void {
     if (this.payloadObject === undefined)
       throw HError.init().code(400).msg("Payload undefined.").show();
-    const typeValidator: OType = OObjectType.follow(types);
-    if (!typeValidator.conforms(this.payloadObject))
+    if (!OObjectType.follow(types).conforms(this.payloadObject))
       throw HError.init().code(400).msg("Payload is not valid type.").show();
   }
 
-  public getBody<T = object>(): T {
-    return this.payloadObject as unknown as T;
+  public getBody(): T {
+    return this.payloadObject as T;
   }
 
   public setPayload(payload: Buffer): void {

@@ -1,7 +1,7 @@
 import {
   HUploadManagerConstructorType,
   HUploadManagerLocation,
-} from "./HUploadManager";
+} from "./upload-manager";
 
 export class HUploadManagerBuilder {
   private readonly _location: HUploadManagerLocation;

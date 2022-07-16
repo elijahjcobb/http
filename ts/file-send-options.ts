@@ -1,5 +1,5 @@
-import { HMime } from "./HMime";
-import { HFileSendType } from "./HFileSendType";
+import type { HMime } from "./mime";
+import type { HFileSendType } from "./file-send-type";
 
 export interface HFileSendOptions {
   type?: HFileSendType;

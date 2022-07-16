@@ -6,8 +6,8 @@ export enum HMethod {
   UNKNOWN,
 }
 
-export abstract class HMethodHelper {
-  public static methodFromString(method: string): HMethod {
+export const HMethodHelper = {
+  methodFromString(method: string): HMethod {
     switch (method) {
       case "GET":
         return HMethod.GET;
@@ -20,9 +20,8 @@ export abstract class HMethodHelper {
       default:
         return HMethod.UNKNOWN;
     }
-  }
-
-  public static stringFromMethod(method: HMethod): string {
+  },
+  stringFromMethod(method: HMethod): string {
     switch (method) {
       case HMethod.GET:
         return "GET";
@@ -35,5 +34,5 @@ export abstract class HMethodHelper {
       default:
         return "UNKNOWN";
     }
-  }
-}
+  },
+};

@@ -1,38 +1,33 @@
-import { Dictionary } from "@ejc-tsds/dictionary";
-import { Stack } from "@ejc-tsds/stack";
-import {
-  HEndpoint,
-  HEndpointConstructorType,
-  HEndpointHandler,
-} from "./HEndpoint";
-import { HRequest } from "./HRequest";
-import { HResponse } from "./HResponse";
-import { HMethod } from "./HMethod";
-import { HEndpointBuilder, HEndpointBuilderResult } from "./HEndpointBuilder";
+import { HEndpoint } from "./endpoint";
+import { HMethod } from "./method";
+import type { HEndpointConstructorType, HEndpointHandler } from "./endpoint";
+import type { HRequest } from "./request";
+import type { HResponse } from "./response";
+import type {
+  HEndpointBuilder,
+  HEndpointBuilderResult,
+} from "./endpoint-builder";
 
 export class HEndpointGroup {
-  private endpoints: Dictionary<
-    HMethod,
-    Dictionary<string, HEndpointGroup | HEndpoint>
-  >;
+  private endpoints: Map<HMethod, Map<string, HEndpointGroup | HEndpoint>>;
   private path: string;
   private postProcessHandler:
     | ((req: HRequest, res: HResponse) => Promise<void>)
     | undefined;
-  private static WILDCARD_KEY_ENDPOINT: string = "*e*";
-  private static WILDCARD_KEY_GROUP: string = "*g*";
+  private static WILDCARD_KEY_ENDPOINT = "*e*";
+  private static WILDCARD_KEY_GROUP = "*g*";
 
-  public constructor(path: string = "") {
+  public constructor(path = "") {
     this.path = path;
 
-    this.endpoints = new Dictionary<
+    this.endpoints = new Map<
       HMethod,
-      Dictionary<string, HEndpointGroup | HEndpoint>
+      Map<string, HEndpointGroup | HEndpoint>
     >();
   }
 
   private findHandlerForEndpoint(
-    endpoints: Stack<string>,
+    endpoints: string[],
     method: HMethod
   ): HEndpoint | undefined {
     const current: string = endpoints.pop() || "";
@@ -40,11 +35,14 @@ export class HEndpointGroup {
     let entryForKey: HEndpointGroup | HEndpoint | undefined = this.endpoints
       .get(method)
       ?.get(current);
-    if (entryForKey === undefined && endpoints.peek() !== undefined)
+    if (entryForKey === undefined && endpoints[endpoints.length - 1])
       entryForKey = this.endpoints
         .get(method)
         ?.get(HEndpointGroup.WILDCARD_KEY_GROUP);
-    if (entryForKey === undefined && endpoints.peek() == undefined)
+    if (
+      entryForKey === undefined &&
+      endpoints[endpoints.length - 1] === undefined
+    )
       entryForKey = this.endpoints
         .get(method)
         ?.get(HEndpointGroup.WILDCARD_KEY_ENDPOINT);
@@ -52,13 +50,12 @@ export class HEndpointGroup {
     if (entryForKey === undefined) return;
     if (
       entryForKey instanceof HEndpoint &&
-      endpoints.peek() == undefined &&
+      endpoints[endpoints.length - 1] === undefined &&
       entryForKey.getMethod() === method
     )
       return entryForKey;
     else if (entryForKey instanceof HEndpointGroup)
       return entryForKey.findHandlerForEndpoint(endpoints, method);
-    else return;
   }
 
   public setPostProcessHandler(
@@ -78,27 +75,25 @@ export class HEndpointGroup {
     method: HMethod,
     listener: HEndpointGroup | HEndpointConstructorType | HEndpointHandler
   ): void {
+    let e = endpoint;
     if (typeof listener === "function")
-      return this.listen(endpoint, method, { handler: listener });
+      return this.listen(e, method, { handler: listener });
 
-    if (endpoint.charAt(0) === "/") endpoint = endpoint.substring(1);
+    if (e.startsWith("/")) e = e.substring(1);
 
     let endpointsForMethod:
-      | Dictionary<string, HEndpointGroup | HEndpoint>
+      | Map<string, HEndpointGroup | HEndpoint>
       | undefined = this.endpoints.get(method);
     if (endpointsForMethod === undefined) {
-      endpointsForMethod = new Dictionary<string, HEndpointGroup | HEndpoint>();
+      endpointsForMethod = new Map<string, HEndpointGroup | HEndpoint>();
       this.endpoints.set(method, endpointsForMethod);
     }
 
     if (listener instanceof HEndpointGroup) {
-      listener.path = endpoint;
-      endpointsForMethod.set(endpoint, listener);
+      listener.path = e;
+      endpointsForMethod.set(e, listener);
     } else {
-      endpointsForMethod.set(
-        endpoint,
-        new HEndpoint(endpoint, method, listener)
-      );
+      endpointsForMethod.set(e, new HEndpoint(e, method, listener));
     }
   }
 
@@ -118,13 +113,10 @@ export class HEndpointGroup {
   }
 
   public getHandler(url: string, method: HMethod): HEndpoint | undefined {
-    if (url.charAt(0) === "/") url = url.substring(1);
-    if (url.charAt(url.length - 1) === "/")
-      url = url.substring(0, url.length - 1);
-    return this.findHandlerForEndpoint(
-      new Stack<string>(url.split("/")),
-      method
-    );
+    let u = url;
+    if (u.startsWith("/")) u = url.substring(1);
+    if (u.endsWith("/")) u = url.substring(0, u.length - 1);
+    return this.findHandlerForEndpoint(u.split("/"), method);
   }
 
   public getDynamic(
@@ -187,7 +179,7 @@ export class HEndpointGroup {
     this.listen(endpoint, HMethod.DELETE, listener);
   }
 
-  public add(endpointBuilder: HEndpointBuilder): void {
+  public add(endpointBuilder: HEndpointBuilder<any>): void {
     const result: HEndpointBuilderResult = endpointBuilder.build();
     this.listen(result.endpoint, result.method, result.constructor);
   }

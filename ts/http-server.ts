@@ -1,6 +1,7 @@
-import { HServer, HServerConfig } from "./HServer";
 import * as HTTP from "http";
-import { HEndpointGroup } from "./HEndpointGroup";
+import { HServer } from "./server";
+import type { HServerConfig } from "./server";
+import type { HEndpointGroup } from "./endpoint-group";
 
 export class HHTTPServer extends HServer {
   private server: HTTP.Server;
@@ -8,10 +9,11 @@ export class HHTTPServer extends HServer {
   public constructor(endpointGroup: HEndpointGroup, config?: HServerConfig) {
     super(endpointGroup, config);
 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     this.server = HTTP.createServer(this.rootHandler);
   }
 
-  public start(port: number = 80, listener?: () => void): void {
+  public start(port = 80, listener?: () => void): void {
     this.server.listen(port, listener);
   }
 }

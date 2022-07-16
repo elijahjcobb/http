@@ -1,14 +1,14 @@
-import * as HTTP from "http";
-import { HRequest } from "./HRequest";
-import { HEndpoint, HEndpointHandler } from "./HEndpoint";
-import { HEndpointGroup } from "./HEndpointGroup";
-import { HResponse } from "./HResponse";
-import { HError } from "./HError";
-import { HUploadManager, HUploadManagerLocation } from "./HUploadManager";
-import { HErrorStatusCode } from "./HErrorStatusCode";
 import { Neon } from "@element-ts/neon";
-import { HMethod } from "./HMethod";
-import { OObjectTypeDefinition } from "@element-ts/oxygen";
+import { HRequest } from "./request";
+import { HResponse } from "./response";
+import { HError } from "./error";
+import { HUploadManager, HUploadManagerLocation } from "./upload-manager";
+import { HErrorStatusCode } from "./error-status-code";
+import { HMethod } from "./method";
+import type { HEndpointGroup } from "./endpoint-group";
+import type { HEndpoint, HEndpointHandler } from "./endpoint";
+import type * as HTTP from "http";
+import type { OObjectTypeDefinition } from "@element-ts/oxygen";
 
 export interface HServerConfig {
   debug?: boolean;
@@ -16,7 +16,6 @@ export interface HServerConfig {
 
 export abstract class HServer {
   private rootEndpointGroup: HEndpointGroup;
-  private config: HServerConfig | undefined;
   public static neon: Neon = new Neon();
 
   protected constructor(
@@ -24,7 +23,6 @@ export abstract class HServer {
     config: HServerConfig | undefined
   ) {
     this.rootHandler = this.rootHandler.bind(this);
-    this.config = config;
     this.rootEndpointGroup = endpointGroup;
 
     if (config?.debug === true) {
@@ -37,7 +35,7 @@ export abstract class HServer {
     req: HTTP.IncomingMessage,
     res: HTTP.ServerResponse
   ): void {
-    const request: HRequest = new HRequest(req);
+    const request: HRequest<any> = new HRequest(req);
     HServer.neon.log("Created HRequest instance for new request.");
     HServer.neon.log({
       headers: request.getHeaders(),
@@ -55,10 +53,8 @@ export abstract class HServer {
 
       HServer.neon.log(`Looking for endpoint for ${HMethod[method]} ${url}.`);
 
-      const endpoint: HEndpoint | undefined = this.rootEndpointGroup.getHandler(
-        url,
-        method
-      );
+      const endpoint: HEndpoint<any> | undefined =
+        this.rootEndpointGroup.getHandler(url, method);
 
       if (endpoint) {
         HServer.neon.log("Found endpoint.");
@@ -83,9 +79,9 @@ export abstract class HServer {
         HServer.neon.log(`Received control from HUploadManager instance.`);
 
         HServer.neon.log(`Fetching HEndpointHandler.`);
-        const handler: HEndpointHandler = endpoint.getHandler();
+        const handler: HEndpointHandler<any> = endpoint.getHandler();
 
-        const types: OObjectTypeDefinition | undefined =
+        const types: OObjectTypeDefinition<any> | undefined =
           endpoint.getRequiredType();
         request.fetchPayload();
         if (types !== undefined) {
@@ -107,22 +103,19 @@ export abstract class HServer {
           show: true,
         });
       }
-    })()
-      .then((): void => {})
-      .catch((err: any): void => {
-        if (err instanceof HError) {
-          HServer.neon.err(
-            `${err.getStatusCode()} - ${err.getInternalStatusMessage()}`
-          );
-          return response.sendError(err);
-        } else {
-          HServer.neon.err(err);
-          return response.error({
-            code: HErrorStatusCode.InternalServerError,
-            msg: "Internal Server Error.",
-          });
-        }
+    })().catch((err: any): void => {
+      if (err instanceof HError) {
+        HServer.neon.err(
+          `${err.getStatusCode()} - ${err.getInternalStatusMessage()}`
+        );
+        return response.sendError(err);
+      }
+      HServer.neon.err(err);
+      return response.error({
+        code: HErrorStatusCode.InternalServerError,
+        msg: "Internal Server Error.",
       });
+    });
   }
 
   public abstract start(port: number, listener?: () => void): void;

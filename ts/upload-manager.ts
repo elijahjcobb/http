@@ -1,7 +1,7 @@
-import { HRequest } from "./HRequest";
+import { HRequest } from "./request";
 import { PromReject, PromResolve } from "@elijahjcobb/prom-type";
 import * as HTTP from "http";
-import { HError } from "./HError";
+import { HError } from "./error";
 import * as FS from "fs";
 import * as Crypto from "crypto";
 

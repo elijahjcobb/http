@@ -1,4 +1,4 @@
-import { HErrorStatusCode } from "./HErrorStatusCode";
+import { HErrorStatusCode } from "./error-status-code";
 
 export class HError {
   private message: string;
@@ -13,13 +13,11 @@ export class HError {
 
   public msg(value: string): HError {
     this.message = value;
-
     return this;
   }
 
   public code(value: HErrorStatusCode): HError {
     this.statusCode = value;
-
     return this;
   }
 
@@ -34,11 +32,11 @@ export class HError {
 
   public getStatusCode(): HErrorStatusCode {
     if (this.shouldShow) return this.statusCode;
-    else return HErrorStatusCode.InternalServerError;
+    return HErrorStatusCode.InternalServerError;
   }
   public getStatusMessage(): string {
     if (this.shouldShow) return this.message;
-    else return "Internal server error.";
+    return "Internal server error.";
   }
 
   public getInternalStatusMessage(): string {

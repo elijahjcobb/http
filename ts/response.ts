@@ -1,46 +1,45 @@
 import * as FS from "fs";
-import { Dictionary } from "@ejc-tsds/dictionary";
-import { HRequest } from "./HRequest";
-import * as HTTP from "http";
-import { HError } from "./HError";
-import { HFileSendOptions } from "./HFileSendOptions";
-import { HFileSendTypeHelper } from "./HFileSendTypeHelper";
-import * as Path from "path";
-import { HObject } from "./HObject";
-import { HErrorStatusCode } from "./HErrorStatusCode";
+import { HError } from "./error";
+import { HFileSendTypeHelper } from "./file-send-type-helper";
+import { HErrorStatusCode } from "./error-status-code";
+import type { HRequest } from "./request";
+import type { HFileSendOptions } from "./file-send-options";
+import type { HObject } from "./object";
+import type * as HTTP from "http";
 
 export class HResponse {
-  private readonly headers: Dictionary<string, string | number>;
+  private readonly headers: Map<string, string | number>;
   private readonly res: HTTP.ServerResponse;
   private statusCode: number;
   private startWrite: boolean;
 
   public constructor(req: HRequest, res: HTTP.ServerResponse) {
-    this.headers = new Dictionary<string, string | number>();
+    this.headers = new Map<string, string | number>();
     this.statusCode = 200;
     this.res = res;
     this.startWrite = false;
   }
 
   private setHeaders(options?: HFileSendOptions): void {
-    this.setHeader("X-Powered-By", "@elijahjcobb/hydrogen on GitHub");
+    this.setHeader("X-Powered-By", "elijahjcobb/http");
 
     if (options) {
       if (options.mime)
         this.setHeader(
           "Content-Type",
-          options.mime.type + "/" + options.mime.subtype
+          `${options.mime.type}/${options.mime.subtype}`
         );
       if (options.length) this.setHeader("Content-Length", options.length);
 
       let msg: string = HFileSendTypeHelper.typeToString(options.type);
-      if (options.name) msg += '; filename="' + options.name + '"';
+      if (options.name) msg += `; filename="${options.name}"`;
 
       this.setHeader("Content-Disposition", msg);
     }
 
-    const headers: HTTP.OutgoingHttpHeaders =
-      this.headers.toObject() as HTTP.OutgoingHttpHeaders;
+    const headers: HTTP.OutgoingHttpHeaders = Object.fromEntries(
+      this.headers
+    ) as HTTP.OutgoingHttpHeaders;
     this.res.writeHead(this.statusCode, headers);
   }
 
@@ -52,11 +51,7 @@ export class HResponse {
     this.setHeader("Content-Type", value);
   }
 
-  public err(
-    code?: HErrorStatusCode,
-    msg?: string,
-    show: boolean = true
-  ): void {
+  public err(code?: HErrorStatusCode, msg?: string, show = true): void {
     this.error({ code, msg, show });
   }
 
@@ -76,9 +71,6 @@ export class HResponse {
 
   public sendError(err: HError): void {
     this.setStatusCode(err.getStatusCode());
-
-    console.error(err);
-
     this.send({
       error: err.getStatusMessage(),
       code: {
@@ -105,15 +97,16 @@ export class HResponse {
   }
 
   public sendFile(path: string, options?: HFileSendOptions): void {
+    let opt = options;
     if (!FS.existsSync(path))
       throw HError.init().msg("The path provided does not resolve to a file.");
 
-    if (options === undefined) options = {};
-    if (options.length === undefined) options.length = FS.statSync(path).size;
+    if (opt === undefined) opt = {};
+    if (opt.length === undefined) opt.length = FS.statSync(path).size;
 
     try {
       const readableStream: FS.ReadStream = FS.createReadStream(path);
-      this.sendStream(readableStream, options);
+      this.sendStream(readableStream, opt);
     } catch (e) {
       throw HError.init().msg("Unable to pipe readable stream to response.");
     }
@@ -141,6 +134,7 @@ export class HResponse {
       this.setTypeHeader("application/json; charset=utf-8");
       this.sendBuffer(objBufferValue);
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
       throw HError.init().msg("Unable to parse json obj into buffer.");
     }

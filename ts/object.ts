@@ -1,3 +1,3 @@
 export interface HObject {
-  bond(): object;
+  bond: () => object;
 }
